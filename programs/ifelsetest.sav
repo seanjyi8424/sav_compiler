@@ -9,4 +9,4 @@ create tool main with ok;
     else;
         m is n minus 1.
         print m.
-print o.
+    print o.
