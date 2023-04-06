@@ -14,5 +14,5 @@ create tool main with ok;
 	a at 2 is 200.
 	show me a at 2.
 	
-	a at 3 is a at 0 times a at 1 plus c.
+	a at 3 is a at 0 times (a at 1 plus c).
 	show me a at 3.
