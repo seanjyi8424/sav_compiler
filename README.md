@@ -60,4 +60,7 @@ Features:
 | ; | SEMICOLON | 
 | ( | LEFT_PAREN |
 | ) | RIGHT_PAREN | 
+| give back | RETURN |
+| , | COMMA | 
+
 
