@@ -17,5 +17,5 @@ create tool main with ok;
 
     show me c. i’m thinking that should print 150
 
-    d is use mult with c, a plus b ok;
+    d is use mult with c, a plus b ok.
     show me d. i’m thinking that should print "22500", since 22500 = 150 * 150
