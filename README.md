@@ -22,4 +22,41 @@ Features:
 | If-then-else | do this if (condition) <br />if not do this (condition) <br />otherwise do this |
 | Read and write statements | show me x. <br />give me y. |
 | Comments | I'm thinking that \[comment\] |
-| Functions | use \[function_name\] with \[args\] ok <br />create tool \[function_name\] with \[args\] ok |
+| Functions | use \[function_name\] with \[args\] ok <br />create tool \[function_name\] with \[args\] ok | 
+
+| **Symbol In Language** | **Token Name** |
+| ---------------------- | -------------- |
+| is a number | INTEGER |
+| has | ARRAY |
+| at | ACCESS_ARRAY | 
+| is | ASSIGNMENT |
+| . | PERIOD |
+| plus | ADDITION |
+| minus | SUBTRACTION | 
+| divided by | DIVISION |
+| times | MULTIPLICATION |
+| modulo | MOD |
+| is less than | LESS |
+| is greater than | GREATER |
+| greater than or equal to | GREATER_OR_EQUAL |
+| less than or equal to | LESSER_OR_EQUAL | 
+| equals | EQUAL | 
+| does not equal | DIFFERENT | 
+| do this unless | WHILE |
+| do this if | IF |
+| if not do this | THEN |
+| otherwise do this | ELSE |
+| show me | PRINT |
+| give me | READ |
+| i'm thinking that | COMMENT |
+| create tool | FUNCTION |
+| with | BEGIN_PARAMS |
+| ok | END_PARAMS |
+| not | NOT |
+| and | AND |
+| or | OR |
+| \tab | TAB |
+| ; | SEMICOLON | 
+| ( | LEFT_PAREN |
+| ) | RIGHT_PAREN | 
+
