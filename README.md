@@ -49,6 +49,7 @@ Features:
 | show me | PRINT |
 | give me | READ |
 | i'm thinking that | COMMENT |
+| use | FUNC_EXEC |
 | create tool | FUNCTION |
 | with | BEGIN_PARAMS |
 | ok | END_PARAMS |
