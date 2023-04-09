@@ -62,5 +62,6 @@ Features:
 | ) | RIGHT_PAREN | 
 | give back | RETURN |
 | , | COMMA | 
+| leave | BREAK | 
 
 
