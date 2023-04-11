@@ -1,7 +1,6 @@
 create tool "add" with "a" is a number, "b" is a number ok;
     give back "a" plus "b".
 
-
 create tool "mult" with "a" is a number, "b" is a number ok;
     give back "a" times "b".
 
