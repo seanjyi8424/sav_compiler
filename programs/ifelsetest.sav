@@ -5,8 +5,8 @@ create tool "main" with ok;
     i’m thinking main program
     give me "n".
     do this if "n" is greater than or equal to 100;
-  		print "n".
+  		show me "n".
     else;
         "m" is "n" minus 1.
-        print "m".
-    print "o".
+        show me "m".
+    show me "o".
