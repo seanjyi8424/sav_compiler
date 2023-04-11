@@ -1,26 +1,26 @@
 create tool main with ok;
-	a is a number.
-	b is a number.
-	c is a number.
-	a is 100.
-	b is 50.
+	"a" is a number.
+	"b" is a number.
+	"c" is a number.
+	"a" is 100.
+	"b" is 50.
 	im thinking Addition, answer is 150, since 150 := 100+50
-	c is a plus b.
-	show me c.
+	"c" is "a" plus "b".
+	show me "c".
 	im thinking Subtraction, answer is 50, since 50 := 100-50
-	c is a minus b.
-	show me c.
+	"c" is a minus "b".
+	show me "c".
 	im thinking Multiplication, answer is 5000, since 5000 := 100 * 50
-	c is a times b.
-	show me c.
+	"c" is "a" times "b".
+	show me "c".
 	im thinking Division, answer is 2, since 2 := 100/50
-	c is a divided by b.
-	show me c.
+	"c" is "a" divided by "b".
+	show me "c".
 	im thinking Modulus, answer is 0, since 0 := 100 % 50
-	c is a mod b.
-	show me c.
+	"c" is "a" mod "b".
+	show me "c".
 	im thinking "Complex" Expression.
-	a is 4.
-	b is 2.
-	c is (a plus b) times 7.
-	show me c.
+	"a" is 4.
+	"b" is 2.
+	"c" is ("a" plus "b") times 7.
+	show me "c".
