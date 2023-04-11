@@ -1,4 +1,4 @@
-create tool main with ok;
+create tool "main" with ok;
 	"a" has 20 numbers.
 	"b" is a number.
 	"c" is a number.
