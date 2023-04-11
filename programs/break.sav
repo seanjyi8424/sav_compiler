@@ -1,4 +1,4 @@
-create tool main with ok;
+create tool "main" with ok;
 	"i" is a number.
 	"i" is 0.
 	do this until "i" is less than or equal to 10;
