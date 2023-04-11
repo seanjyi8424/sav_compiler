@@ -1,7 +1,7 @@
 create tool main with ok;
-	i is a number.
+	"i" is a number.
 	
-	i is 0.
-	do this unless i equals 10;
-		i is i plus 1.
-		show me i.
+	"i" is 0.
+	do this until "i" equals 10;
+		"i" is i plus 1.
+		show me "i".
