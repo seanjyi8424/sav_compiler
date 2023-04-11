@@ -11,6 +11,8 @@ QUOTE \"
 %%
 {DIGIT}+ {printf("NUMBER: %s\n", yytext);} 
 {QUOTE}[a-z0-9 ]*{QUOTE} {printf("IDENTIFIER: %s\n", yytext);}
+has {printf("ARRAY: %s\n", yytext);}
+is[ ]a[ ]number {printf("INTEGER: %s\n", yytext);}
 .
 %%
 
