@@ -25,6 +25,10 @@ QUOTE \"
 
 {DIGIT}+ {printf("NUMBER: %s\n", yytext);} 
 {QUOTE}[a-z0-9 ]*{QUOTE} {printf("IDENTIFIER: %s\n", yytext);}
+{QUOTE}.*{QUOTE} {
+		printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", yylineno, yycolumn - yyleng, yytext);
+		return 1;
+	}
 has {printf("ARRAY: %s\n", yytext);}
 is[ ]a[ ]number {printf("INTEGER: %s\n", yytext);}
 leave {printf("BREAK: %s\n", yytext);}
