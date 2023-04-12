@@ -37,7 +37,7 @@ if[ ]not[ ]do[ ]this {printf("THEN: %s\n", yytext);}
 otherwise[]do[ ]this {printf("ELSE: %s\n", yytext);}
 show[ ]me {printf("PRINT: %s\n", yytext);}
 give[ ]me {printf("WRITE: %s\n", yytext);}
-i'm[ ]thinking[ ]that.* {printf("COMMENT: %s\n", yytext);}
+i'm[ ]thinking[ ]that.* { }
 use {printf("FUNC_EXEC: %s\n", yytext);}
 create[ ]tool {printf("FUNCTION: %s\n", yytext);}
 with {printf("BEGIN_PARAMS: %s\n", yytext);}
