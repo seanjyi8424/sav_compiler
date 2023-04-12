@@ -38,8 +38,8 @@ Features:
 | modulo | MOD |
 | is less than | LESS |
 | is greater than | GREATER |
-| greater than or equal to | GREATER_OR_EQUAL |
-| less than or equal to | LESSER_OR_EQUAL | 
+| is greater than or equal to | GREATER_OR_EQUAL |
+| is less than or equal to | LESSER_OR_EQUAL | 
 | equals | EQUAL | 
 | does not equal | DIFFERENT | 
 | do this until | WHILE |
