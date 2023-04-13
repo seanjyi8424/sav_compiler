@@ -30,7 +30,6 @@ do[ ]this[ ]until {printf("WHILE: %s\n", yytext);}
 ";" {printf("SEMICOLON: %s\n", yytext);}
 "\t" {printf("TAB: %s\n", yytext);}
 
-.
 %%
 
 int main(void) {
