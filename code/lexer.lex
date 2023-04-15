@@ -25,10 +25,11 @@ QUOTE \"
 
 {DIGIT}+ {printf("NUMBER: %s\n", yytext);} 
 {QUOTE}[a-z0-9 ]*{QUOTE} {printf("IDENTIFIER: %s\n", yytext);}
-{QUOTE}.*{QUOTE} {
-		printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", yylineno, yycolumn - yyleng, yytext);
-		return 1;
-	}
+{QUOTE}[^\"]*{QUOTE} {
+  // IDENTIFIER ERROR
+  printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", yylineno, yycolumn - yyleng, yytext);
+  return 1;
+  }
 has {printf("ARRAY: %s\n", yytext);}
 is[ ]a[ ]number {printf("INTEGER: %s\n", yytext);}
 numbers {printf("INTEGER: %s\n", yytext);}
@@ -62,7 +63,16 @@ ok {printf("END_PARAMS: %s\n", yytext);}
 "." {printf("PERIOD: %s\n", yytext);}
 give[ ]back {printf("RETURN: %s\n", yytext);}
 \n {yycolumn = 1;}
+
+[ ] {}
+[ ]+ {
+  // WHITESPACE ERROR
+	printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", yylineno, yycolumn - yyleng, yytext);
+	return 1;
+}
+
 . {
+  // UNRECOGNIZED SYMBOL ERROR
 	printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", yylineno, yycolumn - yyleng, yytext);
 	return 1;
 	};
