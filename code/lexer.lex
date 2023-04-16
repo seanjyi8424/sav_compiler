@@ -56,7 +56,7 @@ at {printf("ACCESS: %s\n", yytext);}
 leave {printf("BREAK: %s\n", yytext);}
 do[ ]this[ ]if {printf("IF: %s\n", yytext);}
 if[ ]not[ ]do[ ]this {printf("THEN: %s\n", yytext);}
-otherwise[]do[ ]this {printf("ELSE: %s\n", yytext);}
+otherwise[ ]do[ ]this {printf("ELSE: %s\n", yytext);}
 show[ ]me {printf("PRINT: %s\n", yytext);}
 give[ ]me {printf("WRITE: %s\n", yytext);}
 i'm[ ]thinking[ ]that.* { }
