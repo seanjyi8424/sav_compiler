@@ -2,7 +2,7 @@ create tool "main" with ok;
     "m" is a number.
     "n" is a number.
     "o" is a number.
-    i’m thinking main program
+    i’m thinking that main program
     give me "n".
     do this if "n" is greater than or equal to 100;
   		show me "n".

@@ -3,5 +3,5 @@ create tool "main" with ok;
 	
 	"i" is 0.
 	do this until "i" equals 10;
-		"i" is i plus 1.
+		"i" is "i" plus 1.
 		show me "i".

@@ -1,20 +1,20 @@
 create tool "add" with "a" is a number, "b" is a number ok;
-    give back "a" plus "b".
+	give back "a" plus "b".
 
 create tool "mult" with "a" is a number, "b" is a number ok;
-    give back "a" times "b".
+	give back "a" times "b".
 
 create tool "main" with ok;
-    "a" is a number.
-    "b" is a number.
-    "c" is a number.
-    "d" is a number.	
+	"a" is a number.
+	"b" is a number.
+	"c" is a number.
+	"d" is a number.	
 
-    "a" is 100.
-    "b" is 50.
-    "c" is use add with "a", "b" ok.
+	"a" is 100.
+	"b" is 50.
+	"c" is use "add" with "a", "b" ok.
 
-    show me "c". i’m thinking that should print 150
+	show me "c". i'm thinking that should print 150
 
-    "d" is use "mult" with "c", "a" plus "b" ok.
-    show me "d". i’m thinking that should print "22500", since 22500 = 150 * 150
+	"d" is use "mult" with "c", "a" plus "b" ok.
+	show me "d". i’m thinking that should print "22500", since 22500 = 150 * 150
