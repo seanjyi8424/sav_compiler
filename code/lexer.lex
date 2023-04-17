@@ -38,7 +38,7 @@ plus {printf("ADDITION: %s\n", yytext);}
 minus {printf("SUBTRACTION: %s\n", yytext);}
 divided[ ]by {printf("DIVISION: %s\n", yytext);}
 times {printf("MULTIPLICATION: %s\n", yytext);}
-modulo {printf("MOD: %s\n", yytext);}
+modulo|mod {printf("MOD: %s\n", yytext);}
 is[ ]greater[ ]than[ ]or[ ]equal[ ]to {printf("GREATER_OR_EQUAL: %s\n", yytext);}
 is[ ]less[ ]than[ ]or[ ]equal[ ]to {printf("LESSER_OR_EQUAL: %s\n", yytext);}
 is[ ]less[ ]than {printf("LESS: %s\n", yytext);}
@@ -47,12 +47,16 @@ equals {printf("EQUAL: %s\n", yytext);}
 does[ ]not[ ]equal {printf("DIFFERENT: %s\n", yytext);}
 do[ ]this[ ]until {printf("WHILE: %s\n", yytext);}
 ";" {printf("SEMICOLON: %s\n", yytext);}
-"\t" {printf("TAB: %s\n", yytext);}
+"    "|"\t" {printf("TAB: %s\n", yytext);}
+at {printf("ACCESS: %s\n", yytext);}
+"(" {printf("L_PAREN: %s\n", yytext);}
+")" {printf("R_PAREN: %s\n", yytext);}
+, {printf("COMMA: %s\n", yytext);}
 
 leave {printf("BREAK: %s\n", yytext);}
 do[ ]this[ ]if {printf("IF: %s\n", yytext);}
 if[ ]not[ ]do[ ]this {printf("THEN: %s\n", yytext);}
-otherwise[]do[ ]this {printf("ELSE: %s\n", yytext);}
+otherwise[ ]do[ ]this {printf("ELSE: %s\n", yytext);}
 show[ ]me {printf("PRINT: %s\n", yytext);}
 give[ ]me {printf("WRITE: %s\n", yytext);}
 i'm[ ]thinking[ ]that.* { }
