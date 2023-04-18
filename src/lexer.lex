@@ -72,13 +72,11 @@ give[ ]back {printf("RETURN\n");}
 [ ]+ {
   // WHITESPACE ERROR
 	printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", yylineno, yycolumn - yyleng, yytext);
-	return 1;
 }
 
 . {
   // UNRECOGNIZED SYMBOL ERROR
 	printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", yylineno, yycolumn - yyleng, yytext);
-	return 1;
 	};
 
 %%
