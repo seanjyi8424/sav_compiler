@@ -28,7 +28,6 @@ QUOTE \"
 {QUOTE}[^\"]*{QUOTE} {
   // IDENTIFIER ERROR
   printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", yylineno, yycolumn - yyleng, yytext);
-  return 1;
   }
 has {printf("ARRAY\n");}
 is[ ]a[ ]number {printf("INTEGER\n");}
