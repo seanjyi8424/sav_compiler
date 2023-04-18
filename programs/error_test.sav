@@ -1,0 +1,4 @@
+create tool "main" with ok;
+	"@" is a number.
+	hello "x" is a number.
+	show me  "x".
