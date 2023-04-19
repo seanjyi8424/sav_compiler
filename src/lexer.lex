@@ -1,6 +1,6 @@
 %{
 // this is where we have our definitions
-#include <stdio.h>
+#include "y.tab.h"
 int yycolumn = 1;
 // code for generating line and column number was taken from: https://stackoverflow.com/questions/26854374/how-do-i-use-yy-bs-lineno-and-yy-bs-column-in-flex
 #define YY_USER_ACTION                                                   \
@@ -23,7 +23,9 @@ QUOTE \"
    int start_line, start_column;
    int prev_yylineno = yylineno;
 
-{DIGIT}+ {printf("NUMBER %s\n", yytext);} 
+{DIGIT}+ { // ! turn print to return, need to define token names
+  
+  printf("NUMBER %s\n", yytext);} 
 {QUOTE}[a-z0-9 ]*{QUOTE} {printf("IDENTIFIER %s\n", yytext);}
 {QUOTE}[^\"]*{QUOTE} {
   // IDENTIFIER ERROR
@@ -79,8 +81,3 @@ give[ ]back {printf("RETURN\n");}
 	};
 
 %%
-
-int main(void) {
-	printf("Ctl + D to quit\n");
-	yylex();
-}
