@@ -26,6 +26,7 @@ Features:
 
 | **Symbol In Language** | **Token Name** |
 | ---------------------- | -------------- |
+| 42, 64, etc. | NUMBER |
 | is a number | INTEGER |
 | has | ARRAY |
 | at | ACCESS_ARRAY | 
