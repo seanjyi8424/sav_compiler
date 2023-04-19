@@ -26,7 +26,9 @@ Features:
 
 | **Symbol In Language** | **Token Name** |
 | ---------------------- | -------------- |
-| is a number | INTEGER |
+| 42, 64, etc. | NUMBER |
+| "a", "b", etc. | IDENTIFIER |
+| is a number \| numbers | INTEGER |
 | has | ARRAY |
 | at | ACCESS_ARRAY | 
 | is | ASSIGNMENT |
@@ -44,7 +46,6 @@ Features:
 | does not equal | DIFFERENT | 
 | do this until | WHILE |
 | do this if | IF |
-| if not do this | THEN |
 | otherwise do this | ELSE |
 | show me | PRINT |
 | give me | READ |

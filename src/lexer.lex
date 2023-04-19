@@ -23,50 +23,48 @@ QUOTE \"
    int start_line, start_column;
    int prev_yylineno = yylineno;
 
-{DIGIT}+ { // ! turn print to return, need to define token names
-  
-  printf("NUMBER %s\n", yytext);} 
-{QUOTE}[a-z0-9 ]*{QUOTE} {printf("IDENTIFIER %s\n", yytext);}
+{DIGIT}+ {return NUMBER;} 
+{QUOTE}[a-z0-9 ]*{QUOTE} {return IDENTIFIER;}
 {QUOTE}[^\"]*{QUOTE} {
   // IDENTIFIER ERROR
+  // TODO: Figure out how to handle syntax errors
   printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", yylineno, yycolumn - yyleng, yytext);
   }
-has {printf("ARRAY\n");}
-is[ ]a[ ]number {printf("INTEGER\n");}
+has {return ARRAY;}
+is[ ]a[ ]number {return INTEGER;}
 numbers {printf("INTEGER\n");}
-is {printf("ASSIGNMENT\n");}
-plus {printf("ADDITION\n");}
-minus {printf("SUBTRACTION\n");}
-divided[ ]by {printf("DIVISION\n");}
-times {printf("MULTIPLICATION\n");}
-modulo|mod {printf("MOD\n");}
-is[ ]greater[ ]than[ ]or[ ]equal[ ]to {printf("GREATER_OR_EQUAL\n");}
-is[ ]less[ ]than[ ]or[ ]equal[ ]to {printf("LESSER_OR_EQUAL\n");}
-is[ ]less[ ]than {printf("LESS\n");}
-is[ ]greater[ ]than {printf("GREATER\n");}
-equals {printf("EQUAL\n");}
-does[ ]not[ ]equal {printf("DIFFERENT\n");}
-do[ ]this[ ]until {printf("WHILE\n");}
-";" {printf("SEMICOLON\n");}
-"    "|"\t" {printf("TAB\n");}
-at {printf("ACCESS\n");}
-"(" {printf("L_PAREN\n");}
-")" {printf("R_PAREN\n");}
-, {printf("COMMA\n");}
+is {return ASSIGNMENT;}
+plus {return ADDITION;}
+minus {return SUBTRACTION;}
+divided[ ]by {return DIVISION;}
+times {return MULTIPLICATION;}
+modulo|mod {return MOD;}
+is[ ]greater[ ]than[ ]or[ ]equal[ ]to {return GREATER_OR_EQUAL;}
+is[ ]less[ ]than[ ]or[ ]equal[ ]to {return LESSER_OR_EQUAL;}
+is[ ]less[ ]than {return LESS;}
+is[ ]greater[ ]than {return GREATER;}
+equals {return EQUAL;}
+does[ ]not[ ]equal {return DIFFERENT;}
+do[ ]this[ ]until {return WHILE;}
+";" {return SEMICOLON;}
+"    "|"\t" {return TAB;}
+at {return ACCESS_ARRAY;}
+"(" {return LEFT_PAREN;}
+")" {return RIGHT_PAREN;}
+, {return COMMA;}
 
-leave {printf("BREAK\n");}
-do[ ]this[ ]if {printf("IF\n");}
-if[ ]not[ ]do[ ]this {printf("THEN\n");}
-otherwise[ ]do[ ]this {printf("ELSE\n");}
-show[ ]me {printf("PRINT\n");}
-give[ ]me {printf("WRITE\n");}
+leave {return BREAK;}
+do[ ]this[ ]if {return IF;}
+if[ ]not[ ]do[ ]this {return THEN;}
+show[ ]me {return PRINT;}
+give[ ]me {return READ;}
 i'm[ ]thinking[ ]that.* { }
-use {printf("FUNC_EXEC\n");}
-create[ ]tool {printf("FUNCTION\n");}
-with {printf("BEGIN_PARAMS\n");}
-ok {printf("END_PARAMS\n");}
-"." {printf("PERIOD\n");}
-give[ ]back {printf("RETURN\n");}
+use {return FUNC_EXEC;}
+create[ ]tool {return FUNCTION;}
+with {return BEGIN_PARAMS;}
+ok {return END_PARAMS;}
+"." {return PERIOD;}
+give[ ]back {return RETURN;}
 \n {yycolumn = 1;}
 
 [ ] {}
