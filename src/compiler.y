@@ -19,14 +19,15 @@ prog_start:   %empty {printf("prog_start -> epsilon\n");}
 
 /*
 TODO: Commented out to compile correctly
+*/
 
 functions:     function {printf("functions -> function\n");}
             |  function functions {printf("functions -> function functions\n");}
             ;
 
 
-function:    FUNCTION IDENTIFIER BEGIN_PARAMS arguments END_PARAMS SEMICOLON statements
-             {printf("function -> ...");}
+function:    FUNCTION IDENTIFIER BEGIN_PARAMS arguments END_PARAMS SEMICOLON //statements
+             {printf("function -> ...\n");}
              ;
 
 arguments:   %empty
@@ -37,10 +38,11 @@ repeat_arguments:    %empty
                     | COMMA argument repeat_arguments
                     ;
 
-argument: INTEGER IDENTIFIER {printf("argument -> INTEGER IDENTIFIER");}
+argument: IDENTIFIER INTEGER {printf("argument -> IDENTIFIER INTEGER");}
           ;
 
-*/
+          
+
 
 %%
 
