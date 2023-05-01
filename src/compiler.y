@@ -28,11 +28,10 @@ functions:     function {printf("functions -> function\n");}
             ;
 
 
-function:    FUNCTION IDENTIFIER BEGIN_PARAMS arguments END_PARAMS SEMICOLON //statements
-             {printf("function -> ...\n");}
+function:    FUNCTION IDENTIFIER BEGIN_PARAMS arguments END_PARAMS SEMICOLON statements {printf("function -> FUNCTION IDENTIFIER BEGIN_PARAMS arguments END_PARAMS SEMICOLON statements\n");}
              ;
 
-arguments:    %empty
+arguments:    %empty  {printf("arguments -> epsilon\n");}
             | argument repeat_arguments
             ;
 
@@ -40,12 +39,40 @@ repeat_arguments:     %empty
                     | COMMA argument repeat_arguments
                     ;
 
-argument: IDENTIFIER INTEGER PERIOD {printf("argument -> IDENTIFIER INTEGER");}
+argument: IDENTIFIER INTEGER {printf("argument -> IDENTIFIER INTEGER\n");}
           ;
 
-          
+statements:   tabs statement {printf("statements -> statement\n");}
+	    | tabs statement statements {printf("statements -> statement statements\n");}
+	    ;
 
+statement:   %empty 
+	   | variable expression PERIOD {printf("statement -> variable expression PERIOD\n");}
+	   | variable ASSIGNMENT expression PERIOD {printf("statement -> variable ASSIGNMENT expression PERIOD\n");}
+           | IF bool_exp SEMICOLON statements ELSE statements {printf("statement -> \n");}
+           | WHILE bool_exp SEMICOLON statements {printf("statement -> WHILE bool-exp SEMICOLON statements\n");}
+           | READ variable PERIOD {printf("statement -> READ variable PERIOD\n");}
+           | PRINT variable PERIOD {printf("statement -> PRINT variable PERIOD\n");}
+           | BREAK PERIOD {printf("statement -> BREAK PERIOD\n");}
+           | expression PERIOD {printf("statement -> expression PERIOD\n");}
+	   ;
 
+tabs:	  TAB repeat_tabs {printf("tabs -> TAB repeat_tabs\n");}
+	;
+
+repeat_tabs: %empty
+	| TAB repeat_tabs {printf("repeat_tabs -> TAB repeat_tabs\n");}
+	;
+
+variable: IDENTIFIER {printf("variable -> IDENTIFIER\n");}
+	;
+
+bool_exp: %empty {printf("bool-exp -> epsilon\n");} /*placeholder for now*/
+	;
+
+expression: INTEGER {printf("expression -> INTEGER\n");}
+	| NUMBER {printf("expression -> NUMBER\n");}
+	;
 %%
 
 int main(void) {
