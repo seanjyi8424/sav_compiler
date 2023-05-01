@@ -1,0 +1,8 @@
+create tool "main" with ok;
+	"a" is a number.
+	"b" is a number.
+	"c" is a number.
+	"d" is a number.	
+
+	"a" is 100.
+	"b" is 50.

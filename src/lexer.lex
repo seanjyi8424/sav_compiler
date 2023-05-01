@@ -1,5 +1,10 @@
+%option noyywrap
+
 %{
 // this is where we have our definitions
+#include <stdio.h>
+#define YY_DECL int yylex(void)
+
 #include "y.tab.h"
 int yycolumn = 1;
 // code for generating line and column number was taken from: https://stackoverflow.com/questions/26854374/how-do-i-use-yy-bs-lineno-and-yy-bs-column-in-flex
