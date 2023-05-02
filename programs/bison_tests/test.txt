@@ -1,0 +1,17 @@
+create tool "main" with ok;
+	"a" is a number.
+	"b" is a number.
+	"c" is a number.
+	"d" is a number.	
+
+	"a" is 100.
+	"b" is 50.
+
+create tool "side" with ok;
+	"e" is a number.
+	"f" is a number.
+	"g" is a number.
+	"h" is a number.
+
+	"e" is 100.
+	"f" is 50.
