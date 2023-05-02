@@ -74,10 +74,6 @@ negate: %empty {printf("negate -> epsilon\n");}
   | NOT {printf("negate -> NOT\n");}
   ;
 
-expression: INTEGER {printf("expression -> INTEGER\n");}
-	| NUMBER {printf("expression -> NUMBER\n");}
-	;
-
 declaration: IDENTIFIER array_declaration INTEGER {printf("declaration -> IDENTIFIER array_declaration INTEGER\n");}
   ;
 
@@ -92,7 +88,28 @@ comp: LESS {printf("comp -> LESS\n");}
   | EQUAL {printf("comp -> EQUAL\n");}
   | DIFFERENT {printf("comp -> DIFFERENT\n");}
   ;
-  
+
+expression: multiplicative_expr {printf("expression -> multiplicative_expr\n");}
+  | multiplicative_expr ADDITION multiplicative_expr {printf("expression -> multiplicative_expr ADDITION multiplicative_expr\n");}
+  | multiplicative_expr SUBTRACTION multiplicative_expr {printf("expression -> multiplicative_expr SUBTRACTION multiplicative_expr\n");}
+  ;
+
+multiplicative_expr: term {printf("multiplicative_expr -> term\n");}
+  | term MULTIPLICATION term {printf("multiplicative_expr -> term MULTIPLICATION term\n");}
+  | term DIVISION term {printf("multiplicative_expr -> term DIVISION term\n");}
+  | term MOD term {printf("multiplicative_expr -> term MOD term\n");}
+
+term: var {printf("term -> var\n");}
+  | NUMBER {printf("term -> NUMBER\n");}
+  | LEFT_PAREN expression RIGHT_PAREN {printf("term -> LEFT_PAREN expression RIGHT_PAREN\n");}
+  | FUNC_EXEC QUOTE IDENTIFIER QUOTE BEGIN_PARAMS expressions END_PARAMS {printf("term -> FUNC_EXEC QUOTE IDENTIFIER QUOTE BEGIN_PARAMS expressions END_PARAMS\n");}
+
+expressions: %empty {printf("expressions-> epsilon\n");}
+  | expression {printf("expressions-> expression\n");}
+  | expression COMMA expressions {printf("expressions-> expression COMMA expressions\n");}
+
+var: QUOTE IDENTIFIER QUOTE {printf("var-> QUOTE IDENTIFIER QUOTE\n");}
+  | QUOTE IDENTIFIER QUOTE ACCESS_ARRAY expression {printf("var-> QUOTE IDENTIFIER QUOTE ACCESS_ARRAY expression\n");}
 %%
 
 
