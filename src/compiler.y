@@ -28,19 +28,8 @@ functions:     function {printf("functions -> function\n");}
             ;
 
 
-function:    FUNCTION IDENTIFIER BEGIN_PARAMS arguments END_PARAMS SEMICOLON statements {printf("function -> FUNCTION IDENTIFIER BEGIN_PARAMS arguments END_PARAMS SEMICOLON statements\n");}
+function:    FUNCTION IDENTIFIER BEGIN_PARAMS declarations END_PARAMS SEMICOLON statements {printf("function -> FUNCTION IDENTIFIER BEGIN_PARAMS arguments END_PARAMS SEMICOLON statements\n");}
              ;
-
-arguments:    %empty  {printf("arguments -> epsilon\n");}
-            | argument repeat_arguments
-            ;
-
-repeat_arguments:     %empty
-                    | COMMA argument repeat_arguments
-                    ;
-
-argument: IDENTIFIER INTEGER {printf("argument -> IDENTIFIER INTEGER\n");}
-          ;
 
 statements:   tabs statement {printf("statements -> statement\n");}
 	    | tabs statement statements {printf("statements -> statement statements\n");}
@@ -54,7 +43,8 @@ statement:   %empty
            | READ variable PERIOD {printf("statement -> READ variable PERIOD\n");}
            | PRINT variable PERIOD {printf("statement -> PRINT variable PERIOD\n");}
            | BREAK PERIOD {printf("statement -> BREAK PERIOD\n");}
-           | expression PERIOD {printf("statement -> expression PERIOD\n");}
+           | RETURN expression PERIOD {printf("statement -> RETURN expression PERIOD\n");}
+	   | expression PERIOD {printf("statement -> expression PERIOD\n");}
 	   ;
 
 tabs:	  TAB repeat_tabs {printf("tabs -> TAB repeat_tabs\n");}
@@ -73,6 +63,10 @@ bool_exp: negate expression comp expression {printf("bool_exp -> not expression 
 negate: %empty {printf("negate -> epsilon\n");}
   | NOT {printf("negate -> NOT\n");}
   ;
+
+declarations: %empty {printf("declarations -> epsilon\n");}
+	| declaration {printf("declarations -> declaration\n");}
+	| declaration COMMA declarations {printf("declarations -> declaration COMMA declarations\n");}
 
 declaration: IDENTIFIER array_declaration INTEGER {printf("declaration -> IDENTIFIER array_declaration INTEGER\n");}
   ;
@@ -100,16 +94,17 @@ multiplicative_expr: term {printf("multiplicative_expr -> term\n");}
   | term MOD term {printf("multiplicative_expr -> term MOD term\n");}
 
 term: var {printf("term -> var\n");}
+  | INTEGER
   | NUMBER {printf("term -> NUMBER\n");}
   | LEFT_PAREN expression RIGHT_PAREN {printf("term -> LEFT_PAREN expression RIGHT_PAREN\n");}
-  | FUNC_EXEC QUOTE IDENTIFIER QUOTE BEGIN_PARAMS expressions END_PARAMS {printf("term -> FUNC_EXEC QUOTE IDENTIFIER QUOTE BEGIN_PARAMS expressions END_PARAMS\n");}
+  | FUNC_EXEC IDENTIFIER BEGIN_PARAMS expressions END_PARAMS {printf("term -> FUNC_EXEC QUOTE IDENTIFIER QUOTE BEGIN_PARAMS expressions END_PARAMS\n");}
 
 expressions: %empty {printf("expressions-> epsilon\n");}
   | expression {printf("expressions-> expression\n");}
   | expression COMMA expressions {printf("expressions-> expression COMMA expressions\n");}
 
-var: QUOTE IDENTIFIER QUOTE {printf("var-> QUOTE IDENTIFIER QUOTE\n");}
-  | QUOTE IDENTIFIER QUOTE ACCESS_ARRAY expression {printf("var-> QUOTE IDENTIFIER QUOTE ACCESS_ARRAY expression\n");}
+var: IDENTIFIER {printf("var-> QUOTE IDENTIFIER QUOTE\n");}
+  | IDENTIFIER ACCESS_ARRAY expression {printf("var-> QUOTE IDENTIFIER QUOTE ACCESS_ARRAY expression\n");}
 %%
 
 
