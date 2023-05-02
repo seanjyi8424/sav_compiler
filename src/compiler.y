@@ -39,8 +39,9 @@ statements:   tabs statement {printf("statements -> statement\n");}
 statement:   %empty 
 	   | variable expression PERIOD {printf("statement -> variable expression PERIOD\n");}
 	   | variable ASSIGNMENT expression PERIOD {printf("statement -> variable ASSIGNMENT expression PERIOD\n");}
-           | IF bool_exp SEMICOLON statements ELSE statements {printf("statement -> \n");}
-           | WHILE bool_exp SEMICOLON statements {printf("statement -> WHILE bool-exp SEMICOLON statements\n");}
+           | ELSE SEMICOLON statements {printf("statement -> ELSE SEMICOLON statements\n");}
+           | IF bool_exp SEMICOLON statements {printf("statement -> IF bool_exp SEMICOLON statements\n");}
+	   | WHILE bool_exp SEMICOLON statements {printf("statement -> WHILE bool-exp SEMICOLON statements\n");}
            | READ variable PERIOD {printf("statement -> READ variable PERIOD\n");}
            | PRINT variable PERIOD {printf("statement -> PRINT variable PERIOD\n");}
            | BREAK PERIOD {printf("statement -> BREAK PERIOD\n");}
