@@ -1,8 +1,8 @@
 %{
     #include <stdio.h>
-
+    extern int yylineno;
     void yyerror (char const *s) {
-        fprintf (stderr, "Parse error: %s\n.", s);
+        fprintf (stderr, "Error at line %d: %s\n", yylineno, s);
     }
     extern int yyparse();
     extern int yylex();
@@ -11,6 +11,7 @@
 %define parse.error verbose
 %token NUMBER IDENTIFIER INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD ADDITION SUBTRACTION DIVISION MULTIPLICATION MOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE
 %start prog_start
+%locations
 
 %%
 
