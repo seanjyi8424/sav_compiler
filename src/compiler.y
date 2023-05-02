@@ -37,16 +37,17 @@ statements:   tabs statement {printf("statements -> statement\n");}
 	    ;
 
 statement:   %empty 
-	   | variable expression PERIOD {printf("statement -> variable expression PERIOD\n");}
-	   | variable ASSIGNMENT expression PERIOD {printf("statement -> variable ASSIGNMENT expression PERIOD\n");}
+	   | var expression PERIOD {printf("statement -> var expression PERIOD\n");}
+	   | var ASSIGNMENT expression PERIOD {printf("statement -> var ASSIGNMENT expression PERIOD\n");}
            | ELSE SEMICOLON statements {printf("statement -> ELSE SEMICOLON statements\n");}
            | IF bool_exp SEMICOLON statements {printf("statement -> IF bool_exp SEMICOLON statements\n");}
 	   | WHILE bool_exp SEMICOLON statements {printf("statement -> WHILE bool-exp SEMICOLON statements\n");}
-           | READ variable PERIOD {printf("statement -> READ variable PERIOD\n");}
-           | PRINT variable PERIOD {printf("statement -> PRINT variable PERIOD\n");}
+           | READ var PERIOD {printf("statement -> READ var PERIOD\n");}
+           | PRINT var PERIOD {printf("statement -> PRINT var PERIOD\n");}
            | BREAK PERIOD {printf("statement -> BREAK PERIOD\n");}
            | RETURN expression PERIOD {printf("statement -> RETURN expression PERIOD\n");}
 	   | expression PERIOD {printf("statement -> expression PERIOD\n");}
+     | declaration PERIOD {printf("statement -> declaration PERIOD\n");}
 	   ;
 
 tabs:	  TAB repeat_tabs {printf("tabs -> TAB repeat_tabs\n");}
@@ -54,9 +55,6 @@ tabs:	  TAB repeat_tabs {printf("tabs -> TAB repeat_tabs\n");}
 
 repeat_tabs: %empty
 	| TAB repeat_tabs {printf("repeat_tabs -> TAB repeat_tabs\n");}
-	;
-
-variable: IDENTIFIER {printf("variable -> IDENTIFIER\n");}
 	;
 
 bool_exp: negate expression comp expression {printf("bool_exp -> not expression comp expression\n");}

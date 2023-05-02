@@ -37,7 +37,7 @@ QUOTE \"
   }
 has {return ARRAY;}
 is[ ]a[ ]number {return INTEGER;}
-numbers {printf("INTEGER\n");}
+numbers {return INTEGER;}
 is {return ASSIGNMENT;}
 plus {return ADDITION;}
 minus {return SUBTRACTION;}
