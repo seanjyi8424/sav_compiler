@@ -67,13 +67,34 @@ repeat_tabs: %empty
 variable: IDENTIFIER {printf("variable -> IDENTIFIER\n");}
 	;
 
-bool_exp: %empty {printf("bool-exp -> epsilon\n");} /*placeholder for now*/
+bool_exp: negate expression comp expression {printf("bool_exp -> not expression comp expression\n");}
 	;
+
+negate: %empty {printf("negate -> epsilon\n");}
+  | NOT {printf("negate -> NOT\n");}
+  ;
 
 expression: INTEGER {printf("expression -> INTEGER\n");}
 	| NUMBER {printf("expression -> NUMBER\n");}
 	;
+
+declaration: IDENTIFIER array_declaration INTEGER {printf("declaration -> IDENTIFIER array_declaration INTEGER\n");}
+  ;
+
+array_declaration: %empty {printf("array_declaration -> epsilon\n");}
+  | ARRAY NUMBER {printf("array_declaration -> ARRAY NUMBER\n");}
+  ;
+
+comp: LESS {printf("comp -> LESS\n");}
+  | GREATER {printf("comp -> GREATER\n");}
+  | GREATER_OR_EQUAL {printf("comp -> GREATER_OR_EQUAL\n");}
+  | LESSER_OR_EQUAL {printf("comp -> LESSER_OR_EQUAL\n");}
+  | EQUAL {printf("comp -> EQUAL\n");}
+  | DIFFERENT {printf("comp -> DIFFERENT\n");}
+  ;
+  
 %%
+
 
 int main(void) {
 	yyin = stdin;
