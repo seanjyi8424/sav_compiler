@@ -1,0 +1,2 @@
+create tool "main" with ok;
+"i" is a number.
