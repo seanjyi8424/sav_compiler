@@ -61,6 +61,7 @@ at {return ACCESS_ARRAY;}
 leave {return BREAK;}
 do[ ]this[ ]if {return IF;}
 if[ ]not[ ]do[ ]this {return THEN;}
+otherwise[ ]do[ ]this {return ELSE;}
 show[ ]me {return PRINT;}
 give[ ]me {return READ;}
 i'm[ ]thinking[ ]that.* { }
