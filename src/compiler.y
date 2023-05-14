@@ -47,14 +47,14 @@ statement:   %empty
            | BREAK PERIOD {printf("statement -> BREAK PERIOD\n");}
            | RETURN expression PERIOD {printf("statement -> RETURN expression PERIOD\n");}
 	   | expression PERIOD {printf("statement -> expression PERIOD\n");}
-     | declaration PERIOD {printf("statement -> declaration PERIOD\n");}
+           | declaration PERIOD {printf("statement -> declaration PERIOD\n");}
 	   ;
 
-tabs:	  TAB repeat_tabs {printf("tabs -> TAB repeat_tabs\n");}
+tabs:	  single_tab {printf("tabs -> TAB repeat_tabs\n");}
+	| tabs single_tab {printf("tabs -> tabs single_tab\n");}
 	;
 
-repeat_tabs: %empty
-	| TAB repeat_tabs {printf("repeat_tabs -> TAB repeat_tabs\n");}
+single_tab: TAB {printf("single_tab -> TAB \n");}
 	;
 
 bool_exp: negate expression comp expression {printf("bool_exp -> not expression comp expression\n");}
