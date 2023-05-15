@@ -2,22 +2,25 @@
 
 %{
 // this is where we have our definitions
-#include <stdio.h>
-#define YY_DECL int yylex(void)
-
+#include <string.h>
 #include "y.tab.h"
-int yycolumn = 1;
+int currLine = 1, currPos =1;
+
+/*#define YY_DECL int yylex(void)
+int yycolumn = 1;*/
+
+extern char *identToken;
+extern int numberToken;
 // code for generating line and column number was taken from: https://stackoverflow.com/questions/26854374/how-do-i-use-yy-bs-lineno-and-yy-bs-column-in-flex
-#define YY_USER_ACTION                                                   \
+
+/*#define YY_USER_ACTION                                                   \
   start_line = prev_yylineno; start_column = yycolumn;                   \
   if (yylineno == prev_yylineno) yycolumn += yyleng;                     \
   else {                                                                 \
     for (yycolumn = 1; yytext[yyleng - yycolumn] != '\n'; ++yycolumn) {} \
     prev_yylineno = yylineno;                                            \
-  }
+  }*/
 %}
-
-%option yylineno
 
 DIGIT [0-9]
 ALPHA [a-zA-Z]
@@ -25,63 +28,71 @@ QUOTE \"
 
 %%
    /* Any indented text before the first rule goes at the top of the lexer.  */
-   int start_line, start_column;
-   int prev_yylineno = yylineno;
+   /*int start_line, start_column;
+   int prev_yylineno = yylineno; */
 
-{DIGIT}+ {return NUMBER;} 
-{QUOTE}[a-z0-9 ]*{QUOTE} {return IDENTIFIER;}
+{DIGIT}+ {
+	currPos += yyleng;
+	char *token = new char[yyleng];
+  	strcpy(token, yytext);
+  	yylval.op_val = token;
+  	numberToken = atoi(yytext);
+	return NUMBER;} 
+{QUOTE}[a-z0-9 ]*{QUOTE} {currPos += yyleng; return IDENTIFIER;}
 {QUOTE}[^\"]*{QUOTE} {
   // IDENTIFIER ERROR
   // TODO: Figure out how to handle syntax errors
-  printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", yylineno, yycolumn - yyleng, yytext);
+  printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", currLine, currPos, yytext);
   }
-has {return ARRAY;}
-is[ ]a[ ]number {return INTEGER;}
-numbers {return INTEGER;}
-is {return ASSIGNMENT;}
-plus {return ADDITION;}
-minus {return SUBTRACTION;}
-divided[ ]by {return DIVISION;}
-times {return MULTIPLICATION;}
-modulo|mod {return MOD;}
-is[ ]greater[ ]than[ ]or[ ]equal[ ]to {return GREATER_OR_EQUAL;}
-is[ ]less[ ]than[ ]or[ ]equal[ ]to {return LESSER_OR_EQUAL;}
-is[ ]less[ ]than {return LESS;}
-is[ ]greater[ ]than {return GREATER;}
-equals {return EQUAL;}
-does[ ]not[ ]equal {return DIFFERENT;}
-do[ ]this[ ]until {return WHILE;}
-";" {return SEMICOLON;}
-"    "|"\t" {return TAB;}
-at {return ACCESS_ARRAY;}
-"(" {return LEFT_PAREN;}
-")" {return RIGHT_PAREN;}
-, {return COMMA;}
+has {currPos += yyleng; return ARRAY;}
+is[ ]a[ ]number {currPos += yyleng; return INTEGER;}
+numbers {currPos += yyleng; return INTEGER;}
+is {currPos += yyleng; return ASSIGNMENT;}
+plus {currPos += yyleng; return ADDITION;}
+minus {currPos += yyleng; return SUBTRACTION;}
+divided[ ]by {currPos += yyleng; return DIVISION;}
+times {currPos += yyleng; return MULTIPLICATION;}
+modulo|mod {currPos += yyleng; return MOD;}
+is[ ]greater[ ]than[ ]or[ ]equal[ ]to {currPos += yyleng; return GREATER_OR_EQUAL;}
+is[ ]less[ ]than[ ]or[ ]equal[ ]to {currPos += yyleng; return LESSER_OR_EQUAL;}
+is[ ]less[ ]than {currPos += yyleng; return LESS;}
+is[ ]greater[ ]than {currPos += yyleng; return GREATER;}
+equals {currPos += yyleng; return EQUAL;}
+does[ ]not[ ]equal {currPos += yyleng; return DIFFERENT;}
+do[ ]this[ ]until {currPos += yyleng; return WHILE;}
+";" {currPos += yyleng; return SEMICOLON;}
+"    "|"\t" {currPos += yyleng; return TAB;}
+at {currPos += yyleng; return ACCESS_ARRAY;}
+"(" {currPos += yyleng; return LEFT_PAREN;}
+")" {currPos += yyleng; return RIGHT_PAREN;}
+, {currPos += yyleng; return COMMA;}
 
-leave {return BREAK;}
-do[ ]this[ ]if {return IF;}
-if[ ]not[ ]do[ ]this {return THEN;}
-otherwise[ ]do[ ]this {return ELSE;}
-show[ ]me {return PRINT;}
-give[ ]me {return READ;}
+leave {currPos += yyleng; return BREAK;}
+do[ ]this[ ]if {currPos += yyleng; return IF;}
+if[ ]not[ ]do[ ]this {currPos += yyleng; return THEN;}
+otherwise[ ]do[ ]this {currPos += yyleng; return ELSE;}
+show[ ]me {currPos += yyleng; return PRINT;}
+give[ ]me {currPos += yyleng; return READ;}
 i'm[ ]thinking[ ]that.* { }
-use {return FUNC_EXEC;}
-create[ ]tool {return FUNCTION;}
-with {return BEGIN_PARAMS;}
-ok {return END_PARAMS;}
-"." {return PERIOD;}
-give[ ]back {return RETURN;}
-\n {yycolumn = 1;}
+use {currPos += yyleng; return FUNC_EXEC;}
+create[ ]tool {currPos += yyleng; return FUNCTION;}
+with {currPos += yyleng; return BEGIN_PARAMS;}
+ok {currPos += yyleng; return END_PARAMS;}
+"." {currPos += yyleng; return PERIOD;}
+give[ ]back {currPos += yyleng; return RETURN;}
+\n {/*yycolumn = 1;*/ currLine++; currPos = 1;}
 
 [ ] {}
 [ ]+ {
   // WHITESPACE ERROR
-	printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", yylineno, yycolumn - yyleng, yytext);
+	/*printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", yylineno, yycolumn - yyleng, yytext);*/
+	printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", currLine, currPos, yytext);
 }
 
 . {
   // UNRECOGNIZED SYMBOL ERROR
-	printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", yylineno, yycolumn - yyleng, yytext);
-	};
+	/*printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", yylineno, yycolumn - yyleng, yytext);*/
+	printf("Error at line %d, column %d: identifier %s must only contain lowercase letters, numbers, and spaces\n", currLine, currPos, yytext);
+	}
 
 %%
