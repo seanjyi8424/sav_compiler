@@ -263,7 +263,7 @@ expression: multiplicative_expr
 | multiplicative_expr ADDITION multiplicative_expr 
 {
 }
-| multiplicative_expr SUBTRACTION multiplicative_exp
+| multiplicative_expr SUBTRACTION multiplicative_expr
 {
 }
 ;
