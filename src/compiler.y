@@ -117,6 +117,10 @@ std::string create_temp() {
   return value;
 }
 
+std::string decl_temp_code(std::string &temp) {
+  return std::string(". ") + temp + std::string("\n");
+}
+
     /*Phase 3 end*/
 %}
 
