@@ -1,5 +1,5 @@
 %{
-    #include <stdio.h>
+#include <stdio.h>
 #include<string>
 #include<vector>
 #include<string.h>
@@ -104,6 +104,7 @@ struct CodeNode {
 %union {
   char *op_val;
   struct CodeNode *node;
+  int int_val;
 }
 
 %define parse.error verbose
