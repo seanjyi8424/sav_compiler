@@ -130,6 +130,9 @@ prog_start: %empty
 }      
 | functions 
 {
+  CodeNode node = $1;
+  printf("Generated code:\n");
+  printf("%s\n", node->code.c_str());
 }
 ;
 
