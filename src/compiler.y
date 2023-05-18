@@ -110,6 +110,13 @@ bool has_main() {
   return TF;
 }
 
+std::string create_temp() {
+  static int num = 0;
+  std::string value = "_temp" + std::to_string(num);
+  num += 1;
+  return value;
+}
+
     /*Phase 3 end*/
 %}
 
