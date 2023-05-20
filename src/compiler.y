@@ -162,9 +162,16 @@ prog_start: %empty
 
 functions: function 
 {
+  CodeNode* node = new CodeNode;
+  $$ = node;
 }
 | function functions 
 {
+  CodeNode* code_node1 = $1;
+  CodeNode* code_node2 = $2;
+  CodeNode* node = new CodeNode;
+  node->code = code_node1->code + code_node2->code;
+  $$ = node;
 }
 ;
 
