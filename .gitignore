@@ -5,3 +5,5 @@ src/lex.yy.c
 src/y.output
 src/y.tab.c
 src/y.tab.h
+src/mil_run
+src/test.mil
