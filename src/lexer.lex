@@ -62,10 +62,34 @@ plus {
   yylval.op_val = token;
   return ADDITION;
 }
-minus {currPos += yyleng; return SUBTRACTION;}
-divided[ ]by {currPos += yyleng; return DIVISION;}
-times {currPos += yyleng; return MULTIPLICATION;}
-modulo|mod {currPos += yyleng; return MOD;}
+minus {
+  currPos += yyleng;
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return SUBTRACTION;
+  }
+divided[ ]by {
+  currPos += yyleng;
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return DIVISION;
+}
+times {
+  currPos += yyleng;
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return MULTIPLICATION;
+}
+modulo|mod {
+  currPos += yyleng; 
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return MOD;
+}
 is[ ]greater[ ]than[ ]or[ ]equal[ ]to {currPos += yyleng; return GREATER_OR_EQUAL;}
 is[ ]less[ ]than[ ]or[ ]equal[ ]to {currPos += yyleng; return LESSER_OR_EQUAL;}
 is[ ]less[ ]than {currPos += yyleng; return LESS;}
