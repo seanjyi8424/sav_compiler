@@ -328,12 +328,9 @@ declaration: IDENTIFIER array_declaration INTEGER
   CodeNode *code_node = new CodeNode;
   std::string id = $1;
   code_node->code = std::string(". ") + id + std::string("\n");
-  // printf("%s\n", code_node->code.c_str());
   $$ = code_node;
 
-  // add the variable to the symbol table.
   std::string value = $1;
-  // * declaration from video
   Type t = Integer;
   add_variable_to_symbol_table(value, t);
 }
