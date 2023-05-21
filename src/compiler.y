@@ -181,9 +181,9 @@ function: FUNCTION function_ident BEGIN_PARAMS declarations END_PARAMS SEMICOLON
   // add the "func func_name"
   node->code += std::string("func ") + func_name + std::string("\n");
 
-  // // add param declaration code
-  // CodeNode *declarations = $4;
-  // node->code += declarations->code;
+  // add param declaration code
+  CodeNode *declarations = $4;
+  node->code += declarations->code;
 
   // CodeNode* statements = $7;
   // node->code += statements->code;
@@ -209,6 +209,8 @@ function_ident: IDENTIFIER
 
 statements: tabs statement 
 {
+  // CodeNode* node = new CodeNode;
+  // $$ = node;
 }
 | tabs statement statements 
 {
