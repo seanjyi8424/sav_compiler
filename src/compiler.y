@@ -252,13 +252,16 @@ statement: %empty
 }
 | READ var PERIOD 
 {
+  CodeNode *node = new CodeNode;
+  std::string var = $2;
+  node->code = std::string(".< ") + var + std::string("\n");
+  $$ = node;
 }
 | PRINT var PERIOD 
 {
   CodeNode *node = new CodeNode;
   std::string var = $2;
   node->code = std::string(".> ") + var + std::string("\n");
-  // printf("%s\n", code_node->code.c_str());
   $$ = node;
 
 }
