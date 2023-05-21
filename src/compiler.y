@@ -387,15 +387,11 @@ multiplicative_expr: term
 
 term: var 
 {
-  // $$ = $1;
-}
-| INTEGER
-{
-  // $$ = $1;
+  $$ = $1;
 }
 | NUMBER 
 {
-  // $$ = $1;
+  $$ = $1;
 }
 | LEFT_PAREN expression RIGHT_PAREN 
 {
