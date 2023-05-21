@@ -34,9 +34,9 @@ QUOTE \"
 {DIGIT}+ {
 	currPos += yyleng;
 	char *token = new char[yyleng];
-  	strcpy(token, yytext);
-  	yylval.op_val = token;
-  	numberToken = atoi(yytext);
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  numberToken = atoi(yytext);
 	return NUMBER;} 
 {QUOTE}[a-z0-9 ]*{QUOTE} {
   currPos += yyleng;
@@ -55,11 +55,41 @@ has {currPos += yyleng; return ARRAY;}
 is[ ]a[ ]number {currPos += yyleng; return INTEGER;}
 numbers {currPos += yyleng; return INTEGER;}
 is {currPos += yyleng; return ASSIGNMENT;}
-plus {currPos += yyleng; return ADDITION;}
-minus {currPos += yyleng; return SUBTRACTION;}
-divided[ ]by {currPos += yyleng; return DIVISION;}
-times {currPos += yyleng; return MULTIPLICATION;}
-modulo|mod {currPos += yyleng; return MOD;}
+plus {
+  currPos += yyleng;
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return ADDITION;
+}
+minus {
+  currPos += yyleng;
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return SUBTRACTION;
+  }
+divided[ ]by {
+  currPos += yyleng;
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return DIVISION;
+}
+times {
+  currPos += yyleng;
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return MULTIPLICATION;
+}
+modulo|mod {
+  currPos += yyleng; 
+	char *token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  return MOD;
+}
 is[ ]greater[ ]than[ ]or[ ]equal[ ]to {currPos += yyleng; return GREATER_OR_EQUAL;}
 is[ ]less[ ]than[ ]or[ ]equal[ ]to {currPos += yyleng; return LESSER_OR_EQUAL;}
 is[ ]less[ ]than {currPos += yyleng; return LESS;}

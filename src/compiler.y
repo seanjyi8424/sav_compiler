@@ -132,10 +132,16 @@ std::string decl_temp_code(std::string &temp) {
 }
 
 %define parse.error verbose
-%token /*NUMBER IDENTIFIER*/ INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD ADDITION SUBTRACTION DIVISION MULTIPLICATION MOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE
+%token /*NUMBER IDENTIFIER*/ INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE
 %token <op_val> NUMBER 
 %token <op_val> IDENTIFIER
-%type  <op_val> symbol 
+%token  <op_val> ADDITION
+%token  <op_val> SUBTRACTION
+%token  <op_val> DIVISION
+%token  <op_val> MULTIPLICATION 
+%token  <op_val> MOD 
+%type  <op_val> var 
+%type  <op_val> term 
 %type  <op_val> function_ident
 %type  <node>   functions
 %type  <node>   function
@@ -181,12 +187,14 @@ function: FUNCTION function_ident BEGIN_PARAMS declarations END_PARAMS SEMICOLON
   // add the "func func_name"
   node->code += std::string("func ") + func_name + std::string("\n");
 
-  // // add param declaration code
-  // CodeNode *declarations = $4;
-  // node->code += declarations->code;
+  // add param declaration code
+  CodeNode *declarations = $4;
+  node->code += declarations->code;
+  // printf("%s\n", declarations->code.c_str());
 
-  // CodeNode* statements = $7;
-  // node->code += statements->code;
+  CodeNode* statements = $7;
+  node->code += statements->code;
+  // printf("%s\n", statements->code.c_str());
 
   node->code += std::string("endfunc\n");
   // printf("%s\n", node->code.c_str());
@@ -209,13 +217,24 @@ function_ident: IDENTIFIER
 
 statements: tabs statement 
 {
+  CodeNode* node = $2;
+  $$ = node;
 }
 | tabs statement statements 
 {
+  CodeNode* code_node1 = $2;
+  CodeNode* code_node2 = $3;
+  CodeNode* node = new CodeNode;
+  node->code = code_node1->code + code_node2->code;
+  $$ = node;
 }
 ;
 
 statement: %empty 
+{
+  CodeNode* node = new CodeNode;
+  $$ = node;
+}
 | var expression PERIOD 
 {
 }
@@ -233,9 +252,18 @@ statement: %empty
 }
 | READ var PERIOD 
 {
+  CodeNode *node = new CodeNode;
+  std::string var = $2;
+  node->code = std::string(".< ") + var + std::string("\n");
+  $$ = node;
 }
 | PRINT var PERIOD 
 {
+  CodeNode *node = new CodeNode;
+  std::string var = $2;
+  node->code = std::string(".> ") + var + std::string("\n");
+  $$ = node;
+
 }
 | BREAK PERIOD 
 {
@@ -248,6 +276,10 @@ statement: %empty
 }
 | declaration PERIOD 
 {
+  CodeNode* code_node1 = $1;
+  CodeNode* node = new CodeNode;
+  node->code = code_node1->code;
+  $$ = node;
 }
 ;
 
@@ -298,10 +330,7 @@ declaration: IDENTIFIER array_declaration INTEGER
   code_node->code = std::string(". ") + id + std::string("\n");
   $$ = code_node;
 
-  // add the variable to the symbol table.
   std::string value = $1;
-  // * declaration from video
-  // printf(". %s\n", value.c_str());
   Type t = Integer;
   add_variable_to_symbol_table(value, t);
 }
@@ -358,10 +387,15 @@ multiplicative_expr: term
 
 term: var 
 {
+  // $$ = $1;
 }
 | INTEGER
+{
+  // $$ = $1;
+}
 | NUMBER 
 {
+  // $$ = $1;
 }
 | LEFT_PAREN expression RIGHT_PAREN 
 {
@@ -382,6 +416,7 @@ expressions: %empty
 
 var: IDENTIFIER 
 {
+  $$ = $1;
 }
 | IDENTIFIER ACCESS_ARRAY expression 
 {
