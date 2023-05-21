@@ -189,7 +189,7 @@ function: FUNCTION function_ident BEGIN_PARAMS declarations END_PARAMS SEMICOLON
   // node->code += statements->code;
 
   node->code += std::string("endfunc\n");
-  printf("%s\n", node->code.c_str());
+  // printf("%s\n", node->code.c_str());
   $$ = node;
   // * end of fucntion from video
   // printf("endfunc\n");
