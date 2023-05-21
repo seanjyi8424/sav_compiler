@@ -46,6 +46,7 @@ Function *get_function() {
   return &symbol_table[last];
 }
 
+
 // find a particular variable using the symbol table.
 // grab the most recent function, and linear search to
 // find the symbol you are looking for.
@@ -304,7 +305,7 @@ expression: multiplicative_expr
 {
   printf("expression -> multiplicative_expr ADDITION multiplicative_expr\n");
 }
-| multiplicative_expr SUBTRACTION multiplicative_exp
+| multiplicative_expr SUBTRACTION multiplicative_expr
 {
   printf("expression -> multiplicative_expr SUBTRACTION multiplicative_expr\n");
 }

@@ -38,7 +38,14 @@ QUOTE \"
   	yylval.op_val = token;
   	numberToken = atoi(yytext);
 	return NUMBER;} 
-{QUOTE}[a-z0-9 ]*{QUOTE} {currPos += yyleng; return IDENTIFIER;}
+{QUOTE}[a-z0-9 ]*{QUOTE} {
+  currPos += yyleng;
+  char * token = new char[yyleng];
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  identToken = yytext; 
+  return IDENTIFIER;
+}
 {QUOTE}[^\"]*{QUOTE} {
   // IDENTIFIER ERROR
   // TODO: Figure out how to handle syntax errors

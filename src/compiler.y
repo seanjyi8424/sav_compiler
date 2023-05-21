@@ -126,8 +126,8 @@ std::string decl_temp_code(std::string &temp) {
 
 
 %union {
-  char *op_val;
   struct CodeNode *node;
+  char *op_val;
   int int_val;
 }
 
@@ -149,10 +149,7 @@ std::string decl_temp_code(std::string &temp) {
 %%
 
 
-prog_start: %empty 
-{
-}      
-| functions 
+prog_start: functions 
 {
   CodeNode* node = $1;
   printf("Generated code:\n");
@@ -160,19 +157,55 @@ prog_start: %empty
 }
 ;
 
-functions: function 
+functions: %empty 
 {
+  CodeNode* node = new CodeNode;
+  $$ = node;
 }
 | function functions 
 {
+  CodeNode* code_node1 = $1;
+  CodeNode* code_node2 = $2;
+  CodeNode* node = new CodeNode;
+  node->code = code_node1->code + code_node2->code;
+  $$ = node;
 }
 ;
 
 
-function: FUNCTION IDENTIFIER BEGIN_PARAMS declarations END_PARAMS SEMICOLON statements 
+function: FUNCTION function_ident BEGIN_PARAMS declarations END_PARAMS SEMICOLON statements 
 {
+  CodeNode *node = new CodeNode;
+  std::string func_name = $2;
+  node->code = "";
+  // add the "func func_name"
+  node->code += std::string("func ") + func_name + std::string("\n");
+
+  // // add param declaration code
+  // CodeNode *declarations = $4;
+  // node->code += declarations->code;
+
+  // CodeNode* statements = $7;
+  // node->code += statements->code;
+
+  node->code += std::string("endfunc\n");
+  // printf("%s\n", node->code.c_str());
+  $$ = node;
+  // * end of fucntion from video
+  // printf("endfunc\n");
 }
 ;
+
+function_ident: IDENTIFIER
+{
+  // add the function to the symbol table.
+  std::string func_name = $1;
+  add_function_to_symbol_table(func_name);
+  // * generating code using printf in phase 3
+  // * start of function from video
+  // printf("func %s\n", func_name.c_str());
+  $$ = $1;
+}
 
 statements: tabs statement 
 {
@@ -246,16 +279,31 @@ negate: %empty
 
 declarations: %empty 
 {
-}
-| declaration 
-{
+  CodeNode* node = new CodeNode;
+  $$ = node;
 }
 | declaration COMMA declarations 
 {
+  CodeNode* code_node1 = $1;
+  CodeNode* code_node2 = $3;
+  CodeNode* node = new CodeNode;
+  node->code = code_node1->code + code_node2->code;
+  $$ = node;
 }
 
 declaration: IDENTIFIER array_declaration INTEGER 
 {
+  CodeNode *code_node = new CodeNode;
+  std::string id = $1;
+  code_node->code = std::string(". ") + id + std::string("\n");
+  $$ = code_node;
+
+  // add the variable to the symbol table.
+  std::string value = $1;
+  // * declaration from video
+  // printf(". %s\n", value.c_str());
+  Type t = Integer;
+  add_variable_to_symbol_table(value, t);
 }
 ;
 
@@ -350,5 +398,6 @@ int main(int argc, char **argv) {
 	} while(!feof(yyin));
 	return 0;*/
 	yyparse();
+  // print_symbol_table();
    	return 0;
 }
