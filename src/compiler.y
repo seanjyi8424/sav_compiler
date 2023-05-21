@@ -140,7 +140,8 @@ std::string decl_temp_code(std::string &temp) {
 %token  <op_val> DIVISION
 %token  <op_val> MULTIPLICATION 
 %token  <op_val> MOD 
-// %type  <op_val> symbol 
+%type  <op_val> var 
+%type  <op_val> term 
 %type  <op_val> function_ident
 %type  <node>   functions
 %type  <node>   function
@@ -254,6 +255,12 @@ statement: %empty
 }
 | PRINT var PERIOD 
 {
+  CodeNode *node = new CodeNode;
+  std::string var = $2;
+  node->code = std::string(".> ") + var + std::string("\n");
+  // printf("%s\n", code_node->code.c_str());
+  $$ = node;
+
 }
 | BREAK PERIOD 
 {
@@ -380,10 +387,15 @@ multiplicative_expr: term
 
 term: var 
 {
+  // $$ = $1;
 }
 | INTEGER
+{
+  // $$ = $1;
+}
 | NUMBER 
 {
+  // $$ = $1;
 }
 | LEFT_PAREN expression RIGHT_PAREN 
 {
@@ -404,6 +416,7 @@ expressions: %empty
 
 var: IDENTIFIER 
 {
+  $$ = $1;
 }
 | IDENTIFIER ACCESS_ARRAY expression 
 {
