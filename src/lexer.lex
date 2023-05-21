@@ -3,6 +3,7 @@
 %{
 // this is where we have our definitions
 #include <string.h>
+#include <string>
 #include "y.tab.h"
 int currLine = 1, currPos =1;
 
@@ -20,6 +21,27 @@ extern int numberToken;
     for (yycolumn = 1; yytext[yyleng - yycolumn] != '\n'; ++yycolumn) {} \
     prev_yylineno = yylineno;                                            \
   }*/
+  
+  void convertIdentifier(char * str) {
+    size_t length = strlen(str);
+  
+    if (length <= 2) {  // If the string has 2 or fewer characters, it becomes an empty string
+      str[0] = '\0';
+    } else {
+      for (size_t i = 0; i < length - 2; i++) {
+        str[i] = str[i + 1];  // Shift characters to the left by one position
+      }
+
+      str[length - 2] = '\0';  // Terminate the string at the new end
+    }
+  
+    // Replace spaces with underscores
+    for (size_t i = 0; i < length; i++) {
+      if (str[i] == ' ') {
+        str[i] = '_';
+      }
+    }
+  }
 %}
 
 DIGIT [0-9]
@@ -42,6 +64,7 @@ QUOTE \"
   currPos += yyleng;
   char * token = new char[yyleng];
   strcpy(token, yytext);
+  convertIdentifier(token);
   yylval.op_val = token;
   identToken = yytext; 
   return IDENTIFIER;
