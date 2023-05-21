@@ -126,8 +126,8 @@ std::string decl_temp_code(std::string &temp) {
 
 
 %union {
-  char *op_val;
   struct CodeNode *node;
+  char *op_val;
   int int_val;
 }
 
@@ -149,10 +149,7 @@ std::string decl_temp_code(std::string &temp) {
 %%
 
 
-prog_start: %empty 
-{
-}      
-| functions 
+prog_start: functions 
 {
   CodeNode* node = $1;
   printf("Generated code:\n");
@@ -160,7 +157,7 @@ prog_start: %empty
 }
 ;
 
-functions: function 
+functions: %empty 
 {
   CodeNode* node = new CodeNode;
   $$ = node;
@@ -192,6 +189,7 @@ function: FUNCTION function_ident BEGIN_PARAMS declarations END_PARAMS SEMICOLON
   // node->code += statements->code;
 
   node->code += std::string("endfunc\n");
+  printf("%s\n", node->code.c_str());
   $$ = node;
   // * end of fucntion from video
   // printf("endfunc\n");
