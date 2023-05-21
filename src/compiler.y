@@ -12,7 +12,6 @@
         fprintf (stderr, "Error at line %d: %s\n", currLine, s);
     }
     //extern FILE* yyin;
-    
     /*Phase 3 begin*/
 char *identToken;
 int  numberToken;
@@ -149,6 +148,9 @@ std::string decl_temp_code(std::string &temp) {
 %type  <node>   declaration
 %type  <node>   statements
 %type  <node>   statement
+%type  <node>   expression
+%type  <node>   expressions
+%type  <node>   multiplicative_expr
 %start prog_start
 %locations
 
@@ -158,7 +160,7 @@ std::string decl_temp_code(std::string &temp) {
 prog_start: functions 
 {
   CodeNode* node = $1;
-  printf("Generated code:\n");
+  // printf("Generated code:\n");
   printf("%s\n", node->code.c_str());
 }
 ;
@@ -177,7 +179,6 @@ functions: %empty
   $$ = node;
 }
 ;
-
 
 function: FUNCTION function_ident BEGIN_PARAMS declarations END_PARAMS SEMICOLON statements 
 {
@@ -240,6 +241,12 @@ statement: %empty
 }
 | var ASSIGNMENT expression PERIOD 
 {
+  std::string dest = $1;
+  CodeNode* expr = $3;
+  CodeNode * node = new CodeNode;
+  // printf("%s\n", expr->code.c_str());
+  node->code = std::string("= ") + dest + std::string(", ") + expr->name + std::string("\n");
+  $$ = node;
 }
 | ELSE SEMICOLON statements 
 {
@@ -363,6 +370,8 @@ comp: LESS
 
 expression: multiplicative_expr 
 {
+  $$ = $1;
+  // printf("%s\n", $1->code.c_str());
 }
 | multiplicative_expr ADDITION multiplicative_expr 
 {
@@ -374,6 +383,11 @@ expression: multiplicative_expr
 
 multiplicative_expr: term 
 {
+  CodeNode * node = new CodeNode;
+  node->code = $1;
+  node->name = $1;
+  // printf("%s\n", node->code.c_str());
+  $$ = node;
 }
 | term MULTIPLICATION term 
 {
@@ -387,20 +401,13 @@ multiplicative_expr: term
 
 term: var 
 {
-  // $$ = $1;
-}
-| INTEGER
-{
-  // $$ = $1;
+  $$ = $1;
 }
 | NUMBER 
 {
-  // $$ = $1;
+  $$ = $1;
 }
-| LEFT_PAREN expression RIGHT_PAREN 
-{
-}
-| FUNC_EXEC IDENTIFIER BEGIN_PARAMS expressions END_PARAMS 
+| LEFT_PAREN expressions END_PARAMS 
 {
 }
 
