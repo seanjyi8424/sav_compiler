@@ -155,6 +155,7 @@ std::string decl_temp_code(std::string &temp) {
 %type  <node>   math_return
 %type  <node>   params
 %type  <node>   param
+%type  <node>   params_not_math
 %start prog_start
 %locations
 
@@ -334,10 +335,22 @@ params: param
 {
   CodeNode* code_node = $1;
   CodeNode* node = new CodeNode;
+  node->code = code_node->code;
   node->name = code_node->name;
   $$ = node;
 }
-| param COMMA params
+| param COMMA math
+{
+  std::string temp = create_temp();
+  std::string name_decl = decl_temp_code(temp);
+  CodeNode* code_node1 = $1;
+  CodeNode* code_node2 = $3;
+  CodeNode* node = new CodeNode;
+  node->code = std::string("param ") + code_node1->code + std::string("\n") + code_node2->code + std::string("param ") + code_node2->name + std::string("\n") + name_decl + std::string("\n");
+  node->name = temp;
+  $$ = node;
+}
+| param COMMA params_not_math
 {
   std::string temp = create_temp();
   std::string name_decl = decl_temp_code(temp);
@@ -396,6 +409,11 @@ math_return: multiplicative_expr ADDITION multiplicative_expr
 }
 ;
 
+params_not_math: expression
+{
+  $$ = $1;
+}
+
 param: expression
 {
   $$ = $1;
@@ -405,6 +423,7 @@ param: expression
   CodeNode* node1 = $1;
   CodeNode* node = new CodeNode;
   node->name = node1->name;
+  node->code = node1->code;
   $$ = node;
 }
 ;
@@ -502,7 +521,7 @@ math: multiplicative_expr ADDITION multiplicative_expr
 	CodeNode* term2 = $3;
 	
 	CodeNode *node = new CodeNode;
-	node->code = decl_temp + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+	node->code = decl_temp + std::string("\n") + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
 	node->name = temp;
 	$$ = node;
 }
