@@ -152,6 +152,8 @@ std::string decl_temp_code(std::string &temp) {
 %type  <node>   expressions
 %type  <node>   multiplicative_expr
 %type  <node>   math
+%type  <node>   params
+%type  <node>   param
 %start prog_start
 %locations
 
@@ -250,10 +252,12 @@ statement: %empty
   $$ = node;
 }
 | var ASSIGNMENT math PERIOD
-{ std::string dest = $1;
+{ 
+  std::string dest = $1;
   CodeNode* mat = $3;
   CodeNode* node = new CodeNode;
-  node->code = mat->code.substr(0, 2) + dest + mat->code.substr(2,mat->code.length()) + std::string("\n");
+  //node->code = mat->code.substr(0, 2) + dest + mat->code.substr(2,mat->code.length()) + std::string("\n");
+  node->code = mat->code + std::string("= ") + dest + std::string(", ") + mat->name + std::string("\n");
   $$ = node;
 }
 | ELSE SEMICOLON statements 
@@ -301,6 +305,37 @@ statement: %empty
   CodeNode* code_node1 = $1;
   CodeNode* node = new CodeNode;
   node->code = code_node1->code;
+  $$ = node;
+}
+| var ASSIGNMENT FUNC_EXEC function_ident BEGIN_PARAMS params END_PARAMS PERIOD
+{
+  //c = func(a , b).
+}
+;
+
+params: param
+{
+  $$ = $1;
+}
+| param COMMA params
+{
+  CodeNode* code_node1 = $1;
+  CodeNode* code_node2 = $3;
+  CodeNode* node = new CodeNode;
+  node->code = code_node1->code + code_node2->code;
+  $$ = node;
+}
+;
+
+param: expression
+{
+  CodeNode* node = new CodeNode;
+  //node->code = 
+  $$ = node;
+}
+| math
+{
+  CodeNode* node = new CodeNode;
   $$ = node;
 }
 ;
@@ -392,38 +427,50 @@ comp: LESS
 
 math: multiplicative_expr ADDITION multiplicative_expr
 {
+	std::string temp = create_temp();
+	std::string decl_temp = decl_temp_code(temp);
 	CodeNode* term1 = $1;
 	CodeNode* term2 = $3;
-	std::string code = std::string("+ , ") + term1->code + std::string(", ") + term2->code;
+	
 	CodeNode *node = new CodeNode;
-	node->code = code;
+	node->code = decl_temp + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+	node->name = temp;
 	$$ = node;
 }
 | multiplicative_expr SUBTRACTION multiplicative_expr
 {
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
         CodeNode* term1 = $1;
         CodeNode* term2 = $3;
-        std::string code = std::string("- , ") + term1->code + std::string(", ") + term2->code;
+
         CodeNode *node = new CodeNode;
-        node->code = code;
+        node->code = decl_temp + std::string("- ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
         $$ = node;
 }
 | multiplicative_expr DIVISION multiplicative_expr
 {
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
         CodeNode* term1 = $1;
         CodeNode* term2 = $3;
-        std::string code = std::string("/ , ") + term1->code + std::string(", ") + term2->code;
+
         CodeNode *node = new CodeNode;
-        node->code = code;
+        node->code = decl_temp + std::string("/ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
         $$ = node;
 }
 | multiplicative_expr MULTIPLICATION multiplicative_expr
 {
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
         CodeNode* term1 = $1;
         CodeNode* term2 = $3;
-        std::string code = std::string("* , ") + term1->code + std::string(", ") + term2->code;
+
         CodeNode *node = new CodeNode;
-        node->code = code;
+        node->code = decl_temp + std::string("* ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
         $$ = node;
 }
 ;
