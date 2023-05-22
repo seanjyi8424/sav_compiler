@@ -117,7 +117,7 @@ std::string create_temp() {
 }
 
 std::string decl_temp_code(std::string &temp) {
-  return std::string(". ") + temp + std::string("\n");
+  return std::string(". ") + temp;
 }
 
     /*Phase 3 end*/
@@ -152,6 +152,7 @@ std::string decl_temp_code(std::string &temp) {
 %type  <node>   expressions
 %type  <node>   multiplicative_expr
 %type  <node>   math
+%type  <node>   math_return
 %type  <node>   params
 %type  <node>   param
 %start prog_start
@@ -200,7 +201,7 @@ function: FUNCTION function_ident BEGIN_PARAMS declarations END_PARAMS SEMICOLON
   node->code += statements->code;
   // printf("%s\n", statements->code.c_str());
 
-  node->code += std::string("endfunc\n");
+  node->code += std::string("endfunc\n\n");
   // printf("%s\n", node->code.c_str());
   $$ = node;
   // * end of fucntion from video
@@ -289,12 +290,16 @@ statement: %empty
 }
 | RETURN expression PERIOD
 {
+  CodeNode* exp = $2;
+  CodeNode* node = new CodeNode;
+  node->code = exp->code + std::string("ret ") + exp->name + std::string("\n");
+  $$ = node;
 }
-| RETURN math PERIOD
+| RETURN math_return PERIOD
 {
   CodeNode* mat = $2;
   CodeNode* node = new CodeNode;
-  node->code = std::string("ret ") + mat->code + std::string("\n");
+  node->code = mat->code + std::string("ret ") + mat->name + std::string("\n");
   $$ = node; 
 }
 | expression PERIOD 
@@ -309,33 +314,97 @@ statement: %empty
 }
 | var ASSIGNMENT FUNC_EXEC function_ident BEGIN_PARAMS params END_PARAMS PERIOD
 {
-  //c = func(a , b).
+  std::string id = $1;
+  std::string func_name = $4;
+  CodeNode* node2 = $6;
+  CodeNode* node = new CodeNode;
+  std::string test = node2->name;
+  if(node2->name.substr(0, 5) == "_temp") {
+    node->code = node2->code + std::string("call ") + func_name + std::string(", ") + node2->name + std::string("\n") + std::string("= ") + id + std::string(", ") + node2->name + std::string("\n");
+  }
+  else {
+    node->code = node2->code + std::string("call ") + func_name + std::string(", ") + node2->name + std::string("\n") + std::string("= ") + id + std::string(", ") + node2->name + std::string("\n");
+  
+  }
+  $$ = node;
 }
 ;
 
 params: param
 {
-  $$ = $1;
+  CodeNode* code_node = $1;
+  CodeNode* node = new CodeNode;
+  node->name = code_node->name;
+  $$ = node;
 }
 | param COMMA params
 {
+  std::string temp = create_temp();
+  std::string name_decl = decl_temp_code(temp);
   CodeNode* code_node1 = $1;
   CodeNode* code_node2 = $3;
   CodeNode* node = new CodeNode;
-  node->code = code_node1->code + code_node2->code;
+  node->code = std::string("param ") + code_node1->code + std::string("\n") + std::string("param ") + code_node2->name + std::string("\n") + name_decl + std::string("\n");
+  node->name = temp;
   $$ = node;
+}
+;
+
+math_return: multiplicative_expr ADDITION multiplicative_expr
+{
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
+        CodeNode* term1 = $1;
+        CodeNode* term2 = $3;
+        CodeNode *node = new CodeNode;
+        node->code = std::string("= ") + term1->code + std::string(", $0") +  std::string("\n") + std::string("= ") + term2->code + std::string(", $1") + std::string("\n") + decl_temp + std::string("\n") + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
+        $$ = node;
+}
+| multiplicative_expr SUBTRACTION multiplicative_expr
+{
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
+        CodeNode* term1 = $1;
+        CodeNode* term2 = $3;
+        CodeNode *node = new CodeNode;
+        node->code = std::string("= ") + term1->code + std::string(", $0") + std::string("\n") + std::string("= ") + term2->code + std::string(", $1") + std::string("\n") + decl_temp + decl_temp +std::string("\n") + std::string("- ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
+        $$ = node;
+}
+| multiplicative_expr DIVISION multiplicative_expr
+{
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
+        CodeNode* term1 = $1;
+        CodeNode* term2 = $3;
+        CodeNode *node = new CodeNode;
+        node->code = std::string("= ") + term1->code + std::string(", $0") + std::string("\n") + std::string("= ") + term2->code + std::string(", $1") + std::string("\n") + decl_temp + decl_temp +std::string("\n") + std::string("/ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
+        $$ = node;
+}
+| multiplicative_expr MULTIPLICATION multiplicative_expr
+{
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
+        CodeNode* term1 = $1;
+        CodeNode* term2 = $3;
+        CodeNode *node = new CodeNode;
+        node->code = std::string("= ") + term1->code + std::string(", $0") + std::string("\n") + std::string("= ") + term2->code + std::string(", $1") + std::string("\n") + decl_temp + std::string("\n") + std::string("* ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
+        $$ = node;
 }
 ;
 
 param: expression
 {
-  CodeNode* node = new CodeNode;
-  //node->code = 
-  $$ = node;
+  $$ = $1;
 }
 | math
 {
+  CodeNode* node1 = $1;
   CodeNode* node = new CodeNode;
+  node->name = node1->name;
   $$ = node;
 }
 ;
