@@ -142,6 +142,7 @@ std::string decl_temp_code(std::string &temp) {
 %type  <op_val> var 
 %type  <op_val> term 
 %type  <op_val> function_ident
+%token  <op_val> ACCESS
 %type  <node>   functions
 %type  <node>   function
 %type  <node>   declarations
@@ -245,21 +246,43 @@ statement: %empty
 | var expression PERIOD 
 {
 }
-| var ASSIGNMENT expression PERIOD 
+| var ACCESS_ARRAY NUMBER ASSIGNMENT expression PERIOD 
+{
+  std::string dest = $1;
+  std::string index = $3;
+  CodeNode* exp = $5;
+  CodeNode *node = new CodeNode;
+  std::string temp = create_temp();
+  std::string temp_decl = decl_temp_code(temp);
+  // printf("%s\n", expr->code.c_str());
+  node->code = temp_decl + std::string("\n= ") + temp + std::string(", ") + exp->code + std::string("\n") + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + temp + std::string("\n");
+  node->name = temp;
+  $$ = node;
+}
+| var ACCESS_ARRAY NUMBER ASSIGNMENT math PERIOD
+{ 
+  std::string dest = $1;
+  std::string index = $3;
+  CodeNode* mat = $5;
+  CodeNode* node = new CodeNode;
+  //node->code = mat->code.substr(0, 2) + dest + mat->code.substr(2,mat->code.length()) + std::string("\n");
+  node->code = mat->code + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + mat->name + std::string("\n");
+  node->name = mat->name;
+  $$ = node;
+}
+| var ASSIGNMENT expression PERIOD
 {
   std::string dest = $1;
   CodeNode* expr = $3;
-  CodeNode * node = new CodeNode;
-  // printf("%s\n", expr->code.c_str());
+  CodeNode* node = new CodeNode;
   node->code = std::string("= ") + dest + std::string(", ") + expr->code + std::string("\n");
   $$ = node;
 }
 | var ASSIGNMENT math PERIOD
-{ 
+{
   std::string dest = $1;
   CodeNode* mat = $3;
   CodeNode* node = new CodeNode;
-  //node->code = mat->code.substr(0, 2) + dest + mat->code.substr(2,mat->code.length()) + std::string("\n");
   node->code = mat->code + std::string("= ") + dest + std::string(", ") + mat->name + std::string("\n");
   $$ = node;
 }
@@ -272,6 +295,18 @@ statement: %empty
 | WHILE bool_exp SEMICOLON statements 
 {
 }
+| PRINT var ACCESS_ARRAY NUMBER PERIOD 
+{
+  std::string temp = create_temp();
+  std::string temp_decl = decl_temp_code(temp);
+  std::string arr = $2;
+  std::string index = $4;
+  CodeNode *node = new CodeNode;
+  std::string var = $2;
+  node->code = temp_decl + std::string("\n") + std::string("=[] ") + temp + std::string(", ") + arr + std::string(", ") + index + std::string("\n") + std::string(".> ") + temp + std::string("\n");
+  node->name = temp;
+  $$ = node;
+}
 | READ var PERIOD 
 {
   CodeNode *node = new CodeNode;
@@ -279,13 +314,12 @@ statement: %empty
   node->code = std::string(".< ") + var + std::string("\n");
   $$ = node;
 }
-| PRINT var PERIOD 
+| PRINT var PERIOD
 {
   CodeNode *node = new CodeNode;
   std::string var = $2;
   node->code = std::string(".> ") + var + std::string("\n");
   $$ = node;
-
 }
 | BREAK PERIOD 
 {
@@ -621,14 +655,6 @@ expressions: %empty
 var: IDENTIFIER 
 {
   $$ = $1;
-}
-| IDENTIFIER ACCESS_ARRAY expression 
-{
-  CodeNode
-}
-| IDENTIFIER ACCESS_ARRAY math
-{
-
 }
 %%
 
