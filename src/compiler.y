@@ -156,6 +156,7 @@ std::string decl_temp_code(std::string &temp) {
 %type  <node>   params
 %type  <node>   param
 %type  <node>   params_not_math
+%type  <node>   array_declaration
 %start prog_start
 %locations
 
@@ -477,6 +478,19 @@ declarations: %empty
 ;
 declaration: IDENTIFIER array_declaration INTEGER 
 {
+  CodeNode *code_node1 = $2;
+  CodeNode *code_node = new CodeNode;
+  std::string id = $1;
+  code_node->code = std::string(".") + code_node1->code + id + std::string(", ") + code_node1->name + std::string("\n");
+  code_node1->name = id;
+  $$ = code_node;
+
+  std::string value = $1;
+  Type t = Integer;
+  add_variable_to_symbol_table(value, t);
+}
+| IDENTIFIER INTEGER
+{
   CodeNode *code_node = new CodeNode;
   std::string id = $1;
   code_node->code = std::string(". ") + id + std::string("\n");
@@ -488,11 +502,13 @@ declaration: IDENTIFIER array_declaration INTEGER
 }
 ;
 
-array_declaration: %empty 
+array_declaration: ARRAY NUMBER 
 {
-}
-| ARRAY NUMBER 
-{
+  // Code for array declaration with a size//
+  CodeNode *code_node = new CodeNode;
+  code_node->code = std::string("[] ");
+  code_node->name = $2;
+  $$ = code_node;
 }
 ;
 
@@ -608,6 +624,11 @@ var: IDENTIFIER
 }
 | IDENTIFIER ACCESS_ARRAY expression 
 {
+  CodeNode
+}
+| IDENTIFIER ACCESS_ARRAY math
+{
+
 }
 %%
 
