@@ -1,0 +1,20 @@
+create tool "main" with ok;
+	"a" is a number.
+	"b" is a number.
+	"c" is a number.
+	"a" is 100.
+	"b" is 50.
+	"c" is "a" plus "b".
+	show me "c".
+	"c" is "a" minus "b".
+	show me "c".
+	"c" is "a" times "b".
+	show me "c".
+	"c" is "a" divided by "b".
+	show me "c".
+	"c" is "a" modulo "b".
+	show me "c".
+	i'm thinking that "a" is 4.
+	i'm thinking that "b" is 2.
+	i'm thinking that "c" is 7 times a plus b.
+	i'm thinking that show me "c".

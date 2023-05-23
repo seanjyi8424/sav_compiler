@@ -1,0 +1,9 @@
+create tool "main" with ok;
+	"a" is a number.
+	"b" is a number.
+	"c" is a number.
+	"a" is 100.
+	"b" is 50.
+	i'm thinking that Addition, answer is 150, since 150 := 100+50
+	"c" is "a" plus "b".
+	show me "c".

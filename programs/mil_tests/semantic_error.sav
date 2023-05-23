@@ -1,0 +1,8 @@
+create tool "main" with ok;
+	"n" is a number.
+	"r" has 10 numbers.
+	"n" has 10 numbers.
+	give me "n".
+	"n" is "z" plus 1.
+	"n" is "n" plus "r".
+	show me "n".

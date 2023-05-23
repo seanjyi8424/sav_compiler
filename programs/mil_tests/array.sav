@@ -1,0 +1,18 @@
+create tool "main" with ok;
+	"a" has 20 numbers.
+	"b" is a number.
+	"c" is a number.
+
+	"b" is 3.
+	"c" is 5.
+	"a" at 0 is "b" plus "c".
+	show me "a" at 0.
+
+	"a" at 1 is 100.
+	show me "a" at 1.
+	
+	"a" at 2 is 200.
+	show me "a" at 2.
+	
+	i'm thinking that "a" at 3 is "a" at 0 times ("a" at 1 plus "c").
+	i'm thinking that show me "a" at 3.

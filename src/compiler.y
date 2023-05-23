@@ -59,7 +59,15 @@ bool find(std::string &value) {
   }
   return false;
 }
-
+std::string get_type(std::string &value) {
+  Function *f = get_function();
+  for(int i=0; i < f->declarations.size(); i++) {
+    Symbol *s = &f->declarations[i];
+    if (s->name == value) {
+      return std::to_string(s->type);
+    }
+  }
+}
 // when you see a function declaration inside the grammar, add
 // the function name to the symbol table
 void add_function_to_symbol_table(std::string &value) {
@@ -518,9 +526,12 @@ declaration: IDENTIFIER array_declaration INTEGER
   code_node->code = std::string(".") + code_node1->code + id + std::string(", ") + code_node1->name + std::string("\n");
   code_node1->name = id;
   $$ = code_node;
-
+  std::string error = std::string("Symbol \"") + id + std::string("\" is multiply-defined.");
   std::string value = $1;
-  Type t = Integer;
+  if(find(id)) {
+	yyerror(error.c_str());
+  }
+  Type t = Array;
   add_variable_to_symbol_table(value, t);
 }
 | IDENTIFIER INTEGER
@@ -569,7 +580,29 @@ math: multiplicative_expr ADDITION multiplicative_expr
 	std::string decl_temp = decl_temp_code(temp);
 	CodeNode* term1 = $1;
 	CodeNode* term2 = $3;
-	
+	std::string bad_var = "";
+	std::string error = "";
+	if (!find(term1->code)) {
+		bad_var = term1->code;
+		error = std::string("used variable \"") + bad_var + std::string("\" was not previously declared.");
+		yyerror(error.c_str());
+	}
+	else if (!find(term2->code)) {
+		bad_var = term2->code;
+		error = std::string("used variable \"") + bad_var + std::string("\" was not previously declared.");
+		yyerror(error.c_str());
+	}
+	/*if (find(term1->code) && get_type(term1->code) == "Array") {
+		bad_var = term1->code;
+		error = std::string("used array variable \"") + bad_var + std::string("\" is missing a specified index.");
+		yyerror(error.c_str());
+	}
+	else if (find(term2->code) && get_type(term2->code) == "Array") {
+		printf("HELL0");
+		bad_var = term2->code;	
+		error = std::string("used array variable \"") + bad_var + std::string("\" is missing a specified index.");
+                yyerror(error.c_str());
+	} */
 	CodeNode *node = new CodeNode;
 	node->code = decl_temp + std::string("\n") + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
 	node->name = temp;

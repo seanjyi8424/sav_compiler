@@ -1,0 +1,5 @@
+create tool "main" with ok;
+	"a" is a number.
+	"a" is 150.
+	show me "a".
+
