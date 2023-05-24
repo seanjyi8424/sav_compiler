@@ -59,15 +59,7 @@ bool find(std::string &value) {
   }
   return false;
 }
-std::string get_type(std::string &value) {
-  Function *f = get_function();
-  for(int i=0; i < f->declarations.size(); i++) {
-    Symbol *s = &f->declarations[i];
-    if (s->name == value) {
-      return std::to_string(s->type);
-    }
-  }
-}
+
 // when you see a function declaration inside the grammar, add
 // the function name to the symbol table
 void add_function_to_symbol_table(std::string &value) {
@@ -143,15 +135,15 @@ std::string decl_temp_code(std::string &temp) {
 %token /*NUMBER IDENTIFIER*/ INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE
 %token <op_val> NUMBER 
 %token <op_val> IDENTIFIER
-%token  <op_val> ADDITION
-%token  <op_val> SUBTRACTION
-%token  <op_val> DIVISION
-%token  <op_val> MULTIPLICATION 
-%token  <op_val> MOD 
+%token <op_val> ADDITION
+%token <op_val> SUBTRACTION
+%token <op_val> DIVISION
+%token <op_val> MULTIPLICATION 
+%token <op_val> MOD
+%token <op_val> ACCESS
 %type  <op_val> var 
 %type  <op_val> term 
 %type  <op_val> function_ident
-%token  <op_val> ACCESS
 %type  <node>   functions
 %type  <node>   function
 %type  <node>   declarations
@@ -255,17 +247,19 @@ statement: %empty
 | var expression PERIOD 
 {
 }
-| var ACCESS_ARRAY NUMBER ASSIGNMENT expression PERIOD 
+| var ACCESS_ARRAY NUMBER ASSIGNMENT NUMBER PERIOD 
 {
   std::string dest = $1;
   std::string index = $3;
+  std::string val = $5;
   CodeNode* exp = $5;
   CodeNode *node = new CodeNode;
-  std::string temp = create_temp();
-  std::string temp_decl = decl_temp_code(temp);
+  //std::string temp = create_temp();
+  //std::string temp_decl = decl_temp_code(temp);
   // printf("%s\n", expr->code.c_str());
-  node->code = temp_decl + std::string("\n= ") + temp + std::string(", ") + exp->code + std::string("\n") + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + temp + std::string("\n");
-  node->name = temp;
+  //node->code = temp_decl + std::string("\n= ") + temp + std::string(", ") + exp->code + std::string("\n") + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + temp + std::string("\n");
+  //node->name = temp;
+  node->code = std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + val + std::string("\n");
   $$ = node;
 }
 | var ACCESS_ARRAY NUMBER ASSIGNMENT math PERIOD
@@ -645,6 +639,18 @@ math: multiplicative_expr ADDITION multiplicative_expr
         node->code = decl_temp + std::string("* ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
         node->name = temp;
         $$ = node;
+} 
+| multiplicative_expr MULTIPLICATION multiplicative_expr
+{
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
+        CodeNode* term1 = $1;
+        CodeNode* term2 = $3;
+
+        CodeNode *node = new CodeNode;
+        node->code = decl_temp + std::string("% ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
+        $$ = node;
 }
 ;
 
@@ -703,6 +709,6 @@ int main(int argc, char **argv) {
 	} while(!feof(yyin));
 	return 0;*/
 	yyparse();
-  // print_symbol_table();
+  print_symbol_table();
    	return 0;
 }
