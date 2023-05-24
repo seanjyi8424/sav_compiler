@@ -640,7 +640,7 @@ math: multiplicative_expr ADDITION multiplicative_expr
         node->name = temp;
         $$ = node;
 } 
-| multiplicative_expr MULTIPLICATION multiplicative_expr
+| multiplicative_expr MOD multiplicative_expr
 {
         std::string temp = create_temp();
         std::string decl_temp = decl_temp_code(temp);
