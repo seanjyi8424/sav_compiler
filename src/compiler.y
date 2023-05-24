@@ -155,6 +155,7 @@ std::string decl_temp_code(std::string &temp) {
 %type  <node>   multiplicative_expr
 %type  <node>   math
 %type  <node>   math_return
+%type  <node>   array_math
 %type  <node>   params
 %type  <node>   param
 %type  <node>   params_not_math
@@ -262,7 +263,7 @@ statement: %empty
   node->code = std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + val + std::string("\n");
   $$ = node;
 }
-| var ACCESS_ARRAY NUMBER ASSIGNMENT math PERIOD
+| var ACCESS_ARRAY NUMBER ASSIGNMENT array_math PERIOD
 { 
   std::string dest = $1;
   std::string index = $3;
@@ -368,6 +369,11 @@ statement: %empty
   $$ = node;
 }
 ;
+
+array_math: math
+{
+  $$ = $1;
+}
 
 params: param
 {
