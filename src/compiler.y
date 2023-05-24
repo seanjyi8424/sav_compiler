@@ -252,7 +252,7 @@ statement: %empty
   std::string dest = $1;
   std::string index = $3;
   std::string val = $5;
-  CodeNode* exp = $5;
+  //CodeNode* exp = $5;
   CodeNode *node = new CodeNode;
   //std::string temp = create_temp();
   //std::string temp_decl = decl_temp_code(temp);
@@ -434,7 +434,7 @@ math_return: multiplicative_expr ADDITION multiplicative_expr
         node->name = temp;
         $$ = node;
 }
-| multiplicative_expr MULTIPLICATION multiplicative_expr
+| multiplicative_expr MOD multiplicative_expr
 {
         std::string temp = create_temp();
         std::string decl_temp = decl_temp_code(temp);
