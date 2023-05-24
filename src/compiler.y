@@ -101,6 +101,7 @@ void print_symbol_table(void) {
 }
 
 struct CodeNode {
+    bool is_array = false;
     std::string code; // generated code as a string.
     std::string name;
 };
@@ -524,7 +525,8 @@ declaration: IDENTIFIER array_declaration INTEGER
   CodeNode *code_node = new CodeNode;
   std::string id = $1;
   code_node->code = std::string(".") + code_node1->code + id + std::string(", ") + code_node1->name + std::string("\n");
-  code_node1->name = id;
+  code_node->name = id;
+  code_node->is_array = true;
   $$ = code_node;
   std::string error = std::string("Symbol \"") + id + std::string("\" is multiply-defined.");
   std::string value = $1;
