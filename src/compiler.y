@@ -704,12 +704,14 @@ math: multiplicative_expr ADDITION multiplicative_expr
 | LEFT_PAREN math RIGHT_PAREN MULTIPLICATION NUMBER
 {
   CodeNode* term1 = $2;
-  CodeNode* term2 = $5;
+  std::string term2 = $5;
   std::string temp = create_temp();
   std::string decl_temp = decl_temp_code(temp);
   CodeNode* node = new CodeNode;
   node->code = term1->code + decl_temp + std::string("\n") + std::string("* ") + 
-  temp + std::string(", ") + term1->name + std::string(", ") + term2->name + std::string("\n");
+  temp + std::string(", ") + term1->name + std::string(", ") + term2 + std::string("\n");
+  node->name = temp;
+  $$ = node;
 }
 ;
 
@@ -768,6 +770,6 @@ int main(int argc, char **argv) {
 	} while(!feof(yyin));
 	return 0;*/
 	yyparse();
-  	//print_symbol_table();
+  	print_symbol_table();
    	return 0;
 }

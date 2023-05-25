@@ -6,3 +6,4 @@ create tool "main" with ok;
 	"n" is "z" plus 1.
 	"n" is "n" plus "r".
 	show me "n".
+	i'm thinking that continue. (This is for phase 4)

@@ -14,7 +14,7 @@ create tool "main" with ok;
 	show me "c".
 	"c" is "a" modulo "b".
 	show me "c".
-	i'm thinking that "a" is 4.
-	i'm thinking that "b" is 2.
-	i'm thinking that "c" is 7 times a plus b.
-	i'm thinking that show me "c".
+	"a" is 4.
+	"b" is 2.
+	"c" is ("a" plus "b") times 7.
+	show me "c".
