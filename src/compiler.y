@@ -276,12 +276,13 @@ statement: %empty
   node->name = mat->name;
   $$ = node;
 }*/
-| accessing_array ASSIGNMENT array_math PERIOD
-{ 
-  CodeNode* dest = $1;
-  CodeNode* mat = $3;
+| var ACCESS_ARRAY NUMBER ASSIGNMENT array_math PERIOD
+{
+  std::string dest = $1;
+  std::string index = $3;
+  CodeNode* mat = $5;
   CodeNode* node = new CodeNode;
-  node->code = mat->code + dest->code;
+  node->code = mat->code + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + mat->name + std::string("\n");
   node->name = mat->name;
   $$ = node;
 }
@@ -291,6 +292,8 @@ statement: %empty
   CodeNode* expr = $3;
   CodeNode* node = new CodeNode;
   node->code = std::string("= ") + dest + std::string(", ") + expr->code + std::string("\n");
+  Type t = Integer;
+  add_variable_to_symbol_table(dest, t);
   $$ = node;
 }
 | var ASSIGNMENT math PERIOD
@@ -381,45 +384,14 @@ statement: %empty
 }
 ;
 
-array_math: math
-{
-  $$ = $1;
-}
-/*| var ACCESS_ARRAY NUMBER ASSIGNMENT var ACCESS_ARRAY NUMBER 
-  MULTIPLICATION LEFT_PAREN var ACCESS_ARRAY NUMBER ADDITION var RIGHT_PAREN
-{
-  std::string var1 = $1;
-  std::string var2 = $14;
-  std::string index1 = $3;
-  std::string index2 = $7;
-  std::string index3 = $12;
-  std::string temp1 = create_temp();
-  std::string temp2 = create_temp();
-  std::string temp3 = create_temp();
-  std::string temp4 = create_temp();
-  std::string temp_decl1 = decl_temp_code(temp1);
-  std::string temp_decl2 = decl_temp_code(temp2);
-  std::string temp_decl3 = decl_temp_code(temp3);
-  std::string temp_decl4 = decl_temp_code(temp4);
-  CodeNode* node = new CodeNode;
-  node->code = temp_decl1 + std::string("\n") + std::string("=[] ") + temp1 + 
-  std::string(", ") + var1 + std::string(", ") + index1 + std::string("\n") +
-  temp_decl2 + std::string("\n") + std::string("=[] ") + temp2 + std::string(", ") +
-  var1 + std::string(", ") + index2 + std::string("\n") + temp_decl3 + std::string("\n")
-  + std::string("+ ") + temp3 + std::string(", ") + temp2 + std::string(", ") + var2 +
-  std::string("\n") + temp_decl4 + std::string("\n") + std::string("* ") + temp4 + 
-  std::string(", ") + temp1 + std::string(", ") + temp3 + std::string("\n");
-  node->name = temp4;
-  $$ = node;
-}*/
-| array_expression MULTIPLICATION LEFT_PAREN array_expression RIGHT_PAREN
+array_math: array_expression MULTIPLICATION LEFT_PAREN array_math RIGHT_PAREN
 {
   std::string temp = create_temp();
   std::string temp_decl = decl_temp_code(temp);
   CodeNode* val1 = $1;
   CodeNode* val2 = $4;
   CodeNode* node = new CodeNode;
-  node->code = val2->code + temp_decl + std::string("\n") + std::string("* ") + temp + std::string(", ") + val1->name 
+  node->code =val1->code + val2->code + temp_decl + std::string("\n") + std::string("* ") + temp + std::string(", ") + val1->name 
   + std::string(", ") + val2->name + std::string("\n");
   node->name = temp;
   $$ = node;
@@ -430,32 +402,34 @@ array_math: math
   std::string temp_decl = decl_temp_code(temp);
   CodeNode* val1 = $1;
   CodeNode* val2 = $3;
+  std::string check_var = val1->code;
   CodeNode* node = new CodeNode;
-  node->code = temp_decl + std::string("\n") + std::string("+ ") + temp + std::string(", ") + val1->name 
+  if(find(val1->name)) {
+    check_var = "";
+  }
+  node->code = check_var + temp_decl + std::string("\n") + std::string("+ ") + temp + std::string(", ") + val1->name 
   + std::string(", ") + val2->name + std::string("\n");
   node->name = temp;
   $$ = node;
 }
 ;
 
-array_expression: math 
+array_expression: accessing_array
 {
   $$ = $1;
 }
-| accessing_array
-{
-  $$ = $1;
-}
-/*| LEFT_PAREN array_math RIGHT_PAREN
-{
-  $$ = $2;
-}*/
 | var {
-  $$ = $1;
+  CodeNode* node = new CodeNode;
+  node->code = $1;
+  node->name = $1;
+  $$ = node;
 }
 | NUMBER
 {
-  $$ = $1;
+  CodeNode* node = new CodeNode;
+  node->code = $1;
+  node->name = $1;
+  $$ = node;
 }
 ;
 
@@ -471,6 +445,7 @@ accessing_array: var ACCESS_ARRAY NUMBER
   node->name = temp;
   $$ = node;
 }
+;
 
 params: param
 {
@@ -523,6 +498,17 @@ math_return: multiplicative_expr ADDITION multiplicative_expr
         CodeNode* term2 = $3;
         CodeNode *node = new CodeNode;
         node->code = std::string("= ") + term1->code + std::string(", $0") + std::string("\n") + std::string("= ") + term2->code + std::string(", $1") + std::string("\n") + decl_temp + decl_temp +std::string("\n") + std::string("- ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->name = temp;
+        $$ = node;
+}
+| multiplicative_expr MULTIPLICATION multiplicative_expr
+{
+        std::string temp = create_temp();
+        std::string decl_temp = decl_temp_code(temp);
+        CodeNode* term1 = $1;
+        CodeNode* term2 = $3;
+        CodeNode *node = new CodeNode;
+        node->code = std::string("= ") + term1->code + std::string(", $0") + std::string("\n") + std::string("= ") + term2->code + std::string(", $1") + std::string("\n") + decl_temp +std::string("\n") + std::string("* ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
         node->name = temp;
         $$ = node;
 }
@@ -638,6 +624,7 @@ declaration: IDENTIFIER array_declaration INTEGER
   CodeNode *code_node = new CodeNode;
   std::string id = $1;
   code_node->code = std::string(". ") + id + std::string("\n");
+  code_node->name = id;
   $$ = code_node;
 
   std::string value = $1;
@@ -681,12 +668,12 @@ math: multiplicative_expr ADDITION multiplicative_expr
 	CodeNode* term2 = $3;
 	std::string bad_var = "";
 	std::string error = "";
-	if (!find(term1->code)) {
+	/*if (!find(term1->name)) {
 		bad_var = term1->code;
 		error = std::string("used variable \"") + bad_var + std::string("\" was not previously declared.");
 		yyerror(error.c_str());
 	}
-	else if (!find(term2->code)) {
+	else if (!find(term2->name)) {
 		bad_var = term2->code;
 		error = std::string("used variable \"") + bad_var + std::string("\" was not previously declared.");
 		yyerror(error.c_str());
@@ -715,7 +702,7 @@ math: multiplicative_expr ADDITION multiplicative_expr
         CodeNode* term2 = $3;
 
         CodeNode *node = new CodeNode;
-        node->code = decl_temp + std::string("- ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->code = decl_temp + std::string("\n") + std::string("- ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
         node->name = temp;
         $$ = node;
 }
@@ -727,7 +714,7 @@ math: multiplicative_expr ADDITION multiplicative_expr
         CodeNode* term2 = $3;
 
         CodeNode *node = new CodeNode;
-        node->code = decl_temp + std::string("/ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->code = decl_temp + std::string("\n") + std::string("/ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
         node->name = temp;
         $$ = node;
 }
@@ -739,7 +726,7 @@ math: multiplicative_expr ADDITION multiplicative_expr
         CodeNode* term2 = $3;
 
         CodeNode *node = new CodeNode;
-        node->code = decl_temp + std::string("* ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->code = decl_temp + std::string("\n") + std::string("* ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
         node->name = temp;
         $$ = node;
 } 
@@ -751,7 +738,7 @@ math: multiplicative_expr ADDITION multiplicative_expr
         CodeNode* term2 = $3;
 
         CodeNode *node = new CodeNode;
-        node->code = decl_temp + std::string("% ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
+        node->code = decl_temp + std::string("\n") + std::string("% ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
         node->name = temp;
         $$ = node;
 }
@@ -812,6 +799,6 @@ int main(int argc, char **argv) {
 	} while(!feof(yyin));
 	return 0;*/
 	yyparse();
-  print_symbol_table();
+  	//print_symbol_table();
    	return 0;
 }
