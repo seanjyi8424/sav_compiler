@@ -278,10 +278,10 @@ statement: %empty
 }*/
 | accessing_array ASSIGNMENT array_math PERIOD
 { 
-  std::string dest = $1;
+  CodeNode* dest = $1;
   CodeNode* mat = $3;
   CodeNode* node = new CodeNode;
-  node->code = mat->code + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + mat->name + std::string("\n");
+  node->code = mat->code + dest->code;
   node->name = mat->name;
   $$ = node;
 }
