@@ -152,6 +152,7 @@ std::string decl_temp_code(std::string &temp) {
 %type  <node>   statement
 %type  <node>   expression
 %type  <node>   expressions
+%type  <node>   array_expression
 %type  <node>   multiplicative_expr
 %type  <node>   math
 %type  <node>   math_return
@@ -160,6 +161,7 @@ std::string decl_temp_code(std::string &temp) {
 %type  <node>   param
 %type  <node>   params_not_math
 %type  <node>   array_declaration
+%type  <node>   accessing_array
 %start prog_start
 %locations
 
@@ -263,13 +265,22 @@ statement: %empty
   node->code = std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + val + std::string("\n");
   $$ = node;
 }
-| var ACCESS_ARRAY NUMBER ASSIGNMENT array_math PERIOD
+/*| var ACCESS_ARRAY NUMBER ASSIGNMENT math PERIOD
 { 
   std::string dest = $1;
   std::string index = $3;
   CodeNode* mat = $5;
   CodeNode* node = new CodeNode;
   //node->code = mat->code.substr(0, 2) + dest + mat->code.substr(2,mat->code.length()) + std::string("\n");
+  node->code = mat->code + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + mat->name + std::string("\n");
+  node->name = mat->name;
+  $$ = node;
+}*/
+| accessing_array ASSIGNMENT array_math PERIOD
+{ 
+  std::string dest = $1;
+  CodeNode* mat = $3;
+  CodeNode* node = new CodeNode;
   node->code = mat->code + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + mat->name + std::string("\n");
   node->name = mat->name;
   $$ = node;
@@ -374,7 +385,7 @@ array_math: math
 {
   $$ = $1;
 }
-| var ACCESS_ARRAY NUMBER ASSIGNMENT var ACCESS_ARRAY NUMBER 
+/*| var ACCESS_ARRAY NUMBER ASSIGNMENT var ACCESS_ARRAY NUMBER 
   MULTIPLICATION LEFT_PAREN var ACCESS_ARRAY NUMBER ADDITION var RIGHT_PAREN
 {
   std::string var1 = $1;
@@ -399,6 +410,65 @@ array_math: math
   std::string("\n") + temp_decl4 + std::string("\n") + std::string("* ") + temp4 + 
   std::string(", ") + temp1 + std::string(", ") + temp3 + std::string("\n");
   node->name = temp4;
+  $$ = node;
+}*/
+| array_expression MULTIPLICATION LEFT_PAREN array_expression RIGHT_PAREN
+{
+  std::string temp = create_temp();
+  std::string temp_decl = decl_temp_code(temp);
+  CodeNode* val1 = $1;
+  CodeNode* val2 = $4;
+  CodeNode* node = new CodeNode;
+  node->code = val2->code + temp_decl + std::string("\n") + std::string("* ") + temp + std::string(", ") + val1->name 
+  + std::string(", ") + val2->name + std::string("\n");
+  node->name = temp;
+  $$ = node;
+}
+| array_expression ADDITION array_expression
+{
+  std::string temp = create_temp();
+  std::string temp_decl = decl_temp_code(temp);
+  CodeNode* val1 = $1;
+  CodeNode* val2 = $3;
+  CodeNode* node = new CodeNode;
+  node->code = temp_decl + std::string("\n") + std::string("+ ") + temp + std::string(", ") + val1->name 
+  + std::string(", ") + val2->name + std::string("\n");
+  node->name = temp;
+  $$ = node;
+}
+;
+
+array_expression: math 
+{
+  $$ = $1;
+}
+| accessing_array
+{
+  $$ = $1;
+}
+/*| LEFT_PAREN array_math RIGHT_PAREN
+{
+  $$ = $2;
+}*/
+| var {
+  $$ = $1;
+}
+| NUMBER
+{
+  $$ = $1;
+}
+;
+
+accessing_array: var ACCESS_ARRAY NUMBER
+{
+  std::string arr = $1;
+  std::string index = $3;
+  std::string temp = create_temp();
+  std::string temp_decl = decl_temp_code(temp);
+  CodeNode* node = new CodeNode;
+  node->code = temp_decl + std::string("\n") + std::string("=[] ") + temp + 
+  std::string(", ") + arr + std::string(", ") + index + std::string("\n");
+  node->name = temp;
   $$ = node;
 }
 
