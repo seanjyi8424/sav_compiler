@@ -374,6 +374,33 @@ array_math: math
 {
   $$ = $1;
 }
+| var ACCESS_ARRAY NUMBER ASSIGNMENT var ACCESS_ARRAY NUMBER 
+  MULTIPLICATION LEFT_PAREN var ACCESS_ARRAY NUMBER ADDITION var RIGHT_PAREN
+{
+  std::string var1 = $1;
+  std::string var2 = $14;
+  std::string index1 = $3;
+  std::string index2 = $7;
+  std::string index3 = $12;
+  std::string temp1 = create_temp();
+  std::string temp2 = create_temp();
+  std::string temp3 = create_temp();
+  std::string temp4 = create_temp();
+  std::string temp_decl1 = decl_temp(temp1);
+  std::string temp_decl2 = decl_temp(temp2);
+  std::string temp_decl3 = decl_temp(temp3);
+  std::string temp_decl4 = decl_temp(temp4);
+  CodeNode* node = new CodeNode;
+  node->code = temp_decl1 + std::string("\n") + std::string("=[] ") + temp1 + 
+  std::string(", ") + var1 + std::string(", ") + index1 + std::string("\n") +
+  temp_decl2 + std::string("\n") + std::string("=[] ") + temp2 + std::string(", ") +
+  var1 + std::string(", ") + index2 + std::string("\n") + temp_decl3 + std::string("\n")
+  + std::string("+ ") + temp3 + std::string(", ") temp2 + std::string(", ") + var2 +
+  std::string("\n") + temp_decl4 + std::string("\n") + std::string("* ") + temp4 + 
+  std::string(", ") + temp1 + std::string(", ") + temp3 + std::string("\n");
+  node->name = temp4;
+  $$ = node;
+}
 
 params: param
 {
