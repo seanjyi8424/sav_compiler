@@ -93,9 +93,10 @@ void print_symbol_table(void) {
 }
 
 struct CodeNode {
-    bool is_array = false;
+    bool arr;
     std::string code; // generated code as a string.
     std::string name;
+    std::string size;
 };
 
 // utility functions from slides
@@ -269,15 +270,17 @@ statement: %empty
   node->code = mat->code + std::string("[]= ") + dest + std::string(", ") + index + std::string(", ") + mat->name + std::string("\n");
   node->name = mat->name;
   $$ = node;
-}
+} 
 | var ASSIGNMENT expression PERIOD
 {
   std::string dest = $1;
   CodeNode* expr = $3;
   CodeNode* node = new CodeNode;
   node->code = std::string("= ") + dest + std::string(", ") + expr->code + std::string("\n");
-  Type t = Integer;
-  add_variable_to_symbol_table(dest, t);
+  if(!find(dest)) {
+    Type t = Integer;
+    add_variable_to_symbol_table(dest, t);
+  }
   $$ = node;
 }
 | var ASSIGNMENT math PERIOD
@@ -469,7 +472,7 @@ math_return: multiplicative_expr ADDITION multiplicative_expr
   std::string decl_temp = decl_temp_code(temp);
   CodeNode* term1 = $1;
   CodeNode* term2 = $3;
-  std::string error = std::string("used variable ") + term1->name +(" was not previously declared.") + std::string("\n");
+  std::string error = std::string("used variable \"") + term1->name +("\" was not previously declared.") + std::string("\n");
   CodeNode *node = new CodeNode;
   node->code = std::string("= ") + term1->code + std::string(", $0") +  std::string("\n") + std::string("= ") + term2->code + std::string(", $1") + std::string("\n") + decl_temp + std::string("\n") + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
   node->name = temp;
@@ -587,12 +590,13 @@ declarations: %empty
   $$ = node;
 }
 ;
+
 declaration: IDENTIFIER array_declaration INTEGER 
 {
   CodeNode *code_node1 = $2;
   CodeNode *code_node = new CodeNode;
   std::string id = $1;
-  code_node->code = std::string(".") + code_node1->code + id + std::string(", ") + code_node1->name + std::string("\n");
+  code_node->code = std::string(".") + code_node1->code + id + std::string(", ") + code_node1->size + std::string("\n");
   code_node->name = id;
   std::string error = std::string("Symbol \"") + id + std::string("\" is multiply-defined.");
   std::string value = $1;
@@ -602,32 +606,31 @@ declaration: IDENTIFIER array_declaration INTEGER
   else {
     Type t = Array;
     add_variable_to_symbol_table(id, t);
-    code_node->is_array = true;
+    code_node->arr = true;
   }
-  code_node->is_array = true;
+  code_node->arr = true;
   $$ = code_node;
 }
 | IDENTIFIER INTEGER
 {
-  CodeNode *code_node = new CodeNode;
+  CodeNode *node = new CodeNode;
   std::string id = $1;
-  code_node->code = std::string(". ") + id + std::string("\n");
-  code_node->name = id;
-  $$ = code_node;
-
-  std::string value = $1;
+  node->code = std::string(". ") + id + std::string("\n");
+  node->name = id;
   Type t = Integer;
-  add_variable_to_symbol_table(value, t);
+  add_variable_to_symbol_table(id, t);
+  $$ = node;
 }
 ;
 
 array_declaration: ARRAY NUMBER 
 {
   // Code for array declaration with a size//
-  CodeNode *code_node = new CodeNode;
-  code_node->code = std::string("[] ");
-  code_node->name = $2;
-  $$ = code_node;
+  CodeNode *node = new CodeNode;
+  node->code = std::string("[] ");
+  node->arr = true;
+  node->size = $2;
+  $$ = node;
 }
 ;
 
@@ -654,14 +657,14 @@ math: multiplicative_expr ADDITION multiplicative_expr
   std::string decl_temp = decl_temp_code(temp);
   CodeNode* term1 = $1;
   CodeNode* term2 = $3;
-  std::string error = std::string("used variable ") + term1->name +(" was not previously declared.") + std::string("\n");
+  std::string error;
   CodeNode *node = new CodeNode;
-  if (find(term1->name) == false) {
+  if (!find(term1->name)) {
+    error = std::string("used variable \"") + term1->name +("\" was not previously declared.");
     yyerror(error.c_str());
   }
-  else if (term2->is_array == true) {
-    error = std::string("used array variable ") + term2->name + (" is missing a specified index.")
-    + std::string("\n");
+  if (term2->arr == true) {
+    error = std::string("used array variable ") + term2->name + (" is missing a specified index.");
     yyerror(error.c_str());
   }
   node->code = decl_temp + std::string("\n") + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
@@ -674,7 +677,6 @@ math: multiplicative_expr ADDITION multiplicative_expr
         std::string decl_temp = decl_temp_code(temp);
         CodeNode* term1 = $1;
         CodeNode* term2 = $3;
-
         CodeNode *node = new CodeNode;
         node->code = decl_temp + std::string("\n") + std::string("- ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
         node->name = temp;
