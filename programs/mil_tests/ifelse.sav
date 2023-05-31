@@ -1,0 +1,13 @@
+create tool "main" with ok;
+	"a" is a number.
+	"b" is a number.
+	"c" is a number.
+
+	"a" is 100.
+	"b" is 50.
+
+	do this if "a" is less than "b";
+		"c" is "b".
+	otherwise do this;
+		"c" is "a".
+	show me "c".
