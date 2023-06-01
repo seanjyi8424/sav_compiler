@@ -16,6 +16,7 @@
 char *identToken;
 int  numberToken;
 int  count_names = 0;
+bool error_free = true;
 
 enum Type { Integer, Array };
 
@@ -58,6 +59,15 @@ bool find(std::string &value) {
     }
   }
   return false;
+}
+
+bool find_func(std::string &value) {
+   for (int i = 0; i < symbol_table.size(); i++) {
+	if (symbol_table[i].name == value) {
+		return true;
+	}
+   }
+   return false;
 }
 
 // when you see a function declaration inside the grammar, add
@@ -173,7 +183,9 @@ prog_start: functions
 {
   CodeNode* node = $1;
   // printf("Generated code:\n");
-  printf("%s\n", node->code.c_str());
+  if (error_free) {
+  	printf("%s\n", node->code.c_str());
+  }
 }
 ;
 
@@ -221,7 +233,9 @@ function_ident: IDENTIFIER
 {
   // add the function to the symbol table.
   std::string func_name = $1;
-  add_function_to_symbol_table(func_name);
+  if (!find_func(func_name)) {
+  	add_function_to_symbol_table(func_name);
+  }
   // * generating code using printf in phase 3
   // * start of function from video
   // printf("func %s\n", func_name.c_str());
@@ -472,7 +486,7 @@ math_return: multiplicative_expr ADDITION multiplicative_expr
   std::string decl_temp = decl_temp_code(temp);
   CodeNode* term1 = $1;
   CodeNode* term2 = $3;
-  std::string error = std::string("used variable \"") + term1->name +("\" was not previously declared.") + std::string("\n");
+  // std::string error = std::string("used variable \"") + term1->name +("\" was not previously declared.") + std::string("\n");
   CodeNode *node = new CodeNode;
   node->code = std::string("= ") + term1->code + std::string(", $0") +  std::string("\n") + std::string("= ") + term2->code + std::string(", $1") + std::string("\n") + decl_temp + std::string("\n") + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
   node->name = temp;
@@ -601,7 +615,8 @@ declaration: IDENTIFIER array_declaration INTEGER
   std::string error = std::string("Symbol \"") + id + std::string("\" is multiply-defined.");
   std::string value = $1;
   if(find(id)) {
-	  yyerror(error.c_str());
+	yyerror(error.c_str());
+	error_free = false;
   }
   else {
     Type t = Array;
@@ -662,10 +677,12 @@ math: multiplicative_expr ADDITION multiplicative_expr
   if (!find(term1->name)) {
     error = std::string("used variable \"") + term1->name +("\" was not previously declared.");
     yyerror(error.c_str());
+    error_free = false;
   }
-  if (term2->arr == true) {
+  else if (term2->arr == true) {
     error = std::string("used array variable ") + term2->name + (" is missing a specified index.");
     yyerror(error.c_str());
+    error_free = false;
   }
   node->code = decl_temp + std::string("\n") + std::string("+ ") + temp + std::string(", ") + term1->code + std::string(", ") + term2->code + std::string("\n");
   node->name = temp;
@@ -785,6 +802,8 @@ int main(int argc, char **argv) {
 	} while(!feof(yyin));
 	return 0;*/
 	yyparse();
-  	print_symbol_table();
+	if (error_free) {
+  	  print_symbol_table();
+	}
    	return 0;
 }
