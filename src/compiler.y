@@ -18,7 +18,7 @@ int  numberToken;
 int  count_names = 0;
 bool error_free = true;
 
-enum Type { Integer, Array, IF, ELSE, END_IF };
+enum Type { Integer, Array, If, Else, End_If };
 
 struct Symbol {
   std::string name;
@@ -140,18 +140,18 @@ std::string create_label(Type t) {
   // static int end_loop = 0;
   std::string value = "";
 
-  if (t == IF) {
+  if (t == If) {
     value = std::string("if_true") + std::to_string(if_n);
     ++if_n;
     return value;
   }
-  else if (t == ELSE) {
+  else if (t == Else) {
     value = std::string("else") + std::to_string(else_n);
     ++else_n;
     return value;
   }
-  else if (t == END_IF) {
-    value = std::string("else") + std::to_string(end);
+  else if (t == End_If) {
+    value = std::string("endif") + std::to_string(end);
     ++end;
     return value;
   }
@@ -162,6 +162,10 @@ std::string create_label(Type t) {
     
   }*/
 
+}
+
+std::string jump_label(std::string &label) {
+  return std::string(":= ") + label; 
 }
 
 std::string decl_label(std::string &temp) {
@@ -351,9 +355,9 @@ statement: %empty
   CodeNode* condition = $2;
   CodeNode* body1 = $4;
   CodeNode* body2 = $9;
-  std::string temp_if = create_label(IF);
-  std::string temp_else = create_label(ELSE);
-  std::string temp_endif = create_label(END_IF);
+  std::string temp_if = create_label(If);
+  std::string temp_else = create_label(Else);
+  std::string temp_endif = create_label(End_If);
   std::string if_decl = decl_label(temp_if);
   std::string else_decl = decl_label(temp_else);
   std::string end_decl = decl_label(temp_endif);
