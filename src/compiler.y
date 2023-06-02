@@ -18,7 +18,7 @@ int  numberToken;
 int  count_names = 0;
 bool error_free = true;
 
-enum Type { Integer, Array };
+enum Type { Integer, Array, If, Else, End_If };
 
 struct Symbol {
   std::string name;
@@ -132,6 +132,46 @@ std::string decl_temp_code(std::string &temp) {
   return std::string(". ") + temp;
 }
 
+std::string create_label(Type t) {
+  static int if_n = 0;
+  static int else_n = 0;
+  static int end = 0;
+  // static int beg_loop = 0;
+  // static int end_loop = 0;
+  std::string value = "";
+
+  if (t == If) {
+    value = std::string("if_true") + std::to_string(if_n);
+    ++if_n;
+    return value;
+  }
+  else if (t == Else) {
+    value = std::string("else") + std::to_string(else_n);
+    ++else_n;
+    return value;
+  }
+  else if (t == End_If) {
+    value = std::string("endif") + std::to_string(end);
+    ++end;
+    return value;
+  }
+  /*else if (t == ELSE) {
+    
+  }
+  else if (t == ELSE) {
+    
+  }*/
+
+}
+
+std::string jump_label(std::string &label) {
+  return std::string(":= ") + label; 
+}
+
+std::string decl_label(std::string &temp) {
+  return std::string(": ") + temp;
+}
+
     /*Phase 3 end*/
 %}
 
@@ -143,7 +183,7 @@ std::string decl_temp_code(std::string &temp) {
 }
 
 %define parse.error verbose
-%token /*NUMBER IDENTIFIER*/ INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE
+%token /*NUMBER IDENTIFIER*/ INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE LEFT_CBRACKET RIGHT_CBRACKET
 %token <op_val> NUMBER 
 %token <op_val> IDENTIFIER
 %token <op_val> ADDITION
@@ -155,6 +195,8 @@ std::string decl_temp_code(std::string &temp) {
 %type  <op_val> var 
 %type  <op_val> term 
 %type  <op_val> function_ident
+%type  <node>   bool_exp
+%type  <node>   comp
 %type  <node>   functions
 %type  <node>   function
 %type  <node>   declarations
@@ -183,9 +225,9 @@ prog_start: functions
 {
   CodeNode* node = $1;
   // printf("Generated code:\n");
-  if (error_free) {
+  //if (error_free) {
   	printf("%s\n", node->code.c_str());
-  }
+  //}
 }
 ;
 
@@ -305,11 +347,28 @@ statement: %empty
   node->code = mat->code + std::string("= ") + dest + std::string(", ") + mat->name + std::string("\n");
   $$ = node;
 }
-| ELSE SEMICOLON statements 
+/*| ELSE SEMICOLON statements 
 {
-}
-| IF bool_exp SEMICOLON statements 
+}*/
+| IF bool_exp LEFT_PAREN statements RIGHT_PAREN tabs ELSE LEFT_PAREN statements RIGHT_PAREN
 {
+  CodeNode* condition = $2;
+  CodeNode* body1 = $4;
+  CodeNode* body2 = $9;
+  std::string temp_if = create_label(If);
+  std::string temp_else = create_label(Else);
+  std::string temp_endif = create_label(End_If);
+  std::string if_decl = decl_label(temp_if);
+  std::string else_decl = decl_label(temp_else);
+  std::string end_decl = decl_label(temp_endif);
+  CodeNode* node = new CodeNode;
+  node->code = condition->code + std::string("\n") std::string("?") +
+  jump_label(temp_if) + std::string(", ") + condition->name + std::string("\n")
+  + jump_label(temp_else) + std::string("\n") + if_decl + std::string("\n")
+  + body1->code + std::string("\n") + jump(temp_endif) + std::string("\n") + 
+  else_decl + std::string("\n") + body2->code + std::string("\n") + end_decl + 
+  std::string("\n");
+  $$ = node;
 }
 | WHILE bool_exp SEMICOLON statements 
 {
@@ -572,6 +631,16 @@ single_tab: TAB
 
 bool_exp: negate expression comp expression 
 {
+  CodeNode* val1 = $2;
+  CodeNode* val2 = $4;
+  CodeNode* comp = $3;
+  std::string temp = create_temp();
+  CodeNode* node = new CodeNode;
+  node->code = decl_temp_code(temp) + std::string("\n") + 
+  comp->code + temp + std::string(", ") + val1->code + std::string(", ")
+   + val2->code + std::string("\n");
+  node->name = temp;
+  $$ = node;
 }
 ;
 
@@ -651,18 +720,33 @@ array_declaration: ARRAY NUMBER
 
 comp: LESS 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string("< ");
+  $$ = node;
 }
 | GREATER 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string("> ");
+  $$ = node;
 }
 | GREATER_OR_EQUAL 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string(">= ");
+  $$ = node;
 }
 | LESSER_OR_EQUAL 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string("<= ");
+  $$ = node;
 }
 | EQUAL 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string("== ");
+  $$ = node;
 }
 ;
 
