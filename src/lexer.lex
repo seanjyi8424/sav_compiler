@@ -125,8 +125,8 @@ do[ ]this[ ]until {currPos += yyleng; return WHILE;}
 at {currPos += yyleng; return ACCESS_ARRAY;}
 "(" {currPos += yyleng; return LEFT_PAREN;}
 ")" {currPos += yyleng; return RIGHT_PAREN;}
-"\{" {currPos += yyleng; return LEFT_CBRACKET;}
-"\}" {currPos += yyleng; return RIGHT_CBRACKET;}
+\{ {currPos += yyleng; return LEFT_CBRACKET;}
+\} {currPos += yyleng; return RIGHT_CBRACKET;}
 , {currPos += yyleng; return COMMA;}
 
 leave {currPos += yyleng; return BREAK;}

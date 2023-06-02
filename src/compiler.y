@@ -159,7 +159,7 @@ std::string decl_else(std::string &temp) {
 }
 
 %define parse.error verbose
-%token /*NUMBER IDENTIFIER*/ INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE
+%token /*NUMBER IDENTIFIER*/ INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE LEFT_CBRACKET RIGHT_CBRACKET
 %token <op_val> NUMBER 
 %token <op_val> IDENTIFIER
 %token <op_val> ADDITION
@@ -172,6 +172,7 @@ std::string decl_else(std::string &temp) {
 %type  <op_val> term 
 %type  <op_val> function_ident
 %type  <node>   bool_exp
+%type  <node>   comp
 %type  <node>   functions
 %type  <node>   function
 %type  <node>   declarations
@@ -322,16 +323,16 @@ statement: %empty
   node->code = mat->code + std::string("= ") + dest + std::string(", ") + mat->name + std::string("\n");
   $$ = node;
 }
-//| ELSE SEMICOLON statements 
-//{
-//}
-| IF bool_exp LEFT_CBRACKET statements RIGHT_CBRACKET ELSE LEFT_CBRACKET statements RIGHT_CBRACKET
+/*| ELSE SEMICOLON statements 
 {
-  CodeNode* comp = $2;
+}*/
+| IF bool_exp LEFT_PAREN statements RIGHT_PAREN tabs ELSE LEFT_PAREN statements RIGHT_PAREN
+{
+  CodeNode* condition = $2;
   CodeNode* body1 = $4;
-  CodeNode* body2 = $8;
+  CodeNode* body2 = $9;
   CodeNode* node = new CodeNode;
-  node->code = comp->code + std::string("\n");
+  node->code = condition->code + std::string("\n");
   $$ = node;
 }
 | WHILE bool_exp SEMICOLON statements 
@@ -597,6 +598,7 @@ bool_exp: negate expression comp expression
 {
   CodeNode* val1 = $2;
   CodeNode* val2 = $4;
+  CodeNode* comp = $3;
   std::string temp = create_temp();
   CodeNode* node = new CodeNode;
   node->code = decl_temp_code(temp) + std::string("\n") + 

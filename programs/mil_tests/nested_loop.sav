@@ -3,11 +3,11 @@ create tool "main" with ok;
 	"j" is a number.
 	
 	"i" is 0.
-	do this until "i" is less than 2 {
+	do this until "i" is less than 2 (
 		"j" is 1.
-		do this until "j" is less than or equal to 3 {
+		do this until "j" is less than or equal to 3 (
 			show me "j".
 			"j" is "j" plus 1.
-		}
+		)
 		"i" is "i" plus 1.
-	}
+	)
