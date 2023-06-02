@@ -362,10 +362,12 @@ statement: %empty
   std::string else_decl = decl_label(temp_else);
   std::string end_decl = decl_label(temp_endif);
   CodeNode* node = new CodeNode;
-  node->code = condition->code + std::string("\n") + temp_if + std::string("\n")
-   + temp_else + std::string("\n") + temp_endif + std::string("\n")
-    + if_decl + std::string("\n") + else_decl + std::string("\n")
-     + end_decl + std::string("\n");
+  node->code = condition->code + std::string("\n") std::string("?") +
+  jump_label(temp_if) + std::string(", ") + condition->name + std::string("\n")
+  + jump_label(temp_else) + std::string("\n") + if_decl + std::string("\n")
+  + body1->code + std::string("\n") + jump(temp_endif) + std::string("\n") + 
+  else_decl + std::string("\n") + body2->code + std::string("\n") + end_decl + 
+  std::string("\n");
   $$ = node;
 }
 | WHILE bool_exp SEMICOLON statements 
