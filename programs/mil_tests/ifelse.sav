@@ -6,8 +6,10 @@ create tool "main" with ok;
 	"a" is 100.
 	"b" is 50.
 
-	do this if "a" is less than "b";
+	do this if "a" is less than "b" {
 		"c" is "b".
-	otherwise do this;
+	}
+	otherwise do this {
 		"c" is "a".
+	}
 	show me "c".

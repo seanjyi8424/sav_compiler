@@ -132,6 +132,22 @@ std::string decl_temp_code(std::string &temp) {
   return std::string(". ") + temp;
 }
 
+std::string create_if_temp() {
+
+}
+
+std::string create_else_temp() {
+
+}
+
+std::string decl_if(std::string &temp) {
+
+}
+
+std::string decl_else(std::string &temp) {
+  
+}
+
     /*Phase 3 end*/
 %}
 
@@ -155,6 +171,7 @@ std::string decl_temp_code(std::string &temp) {
 %type  <op_val> var 
 %type  <op_val> term 
 %type  <op_val> function_ident
+%type  <node>   bool_exp
 %type  <node>   functions
 %type  <node>   function
 %type  <node>   declarations
@@ -183,9 +200,9 @@ prog_start: functions
 {
   CodeNode* node = $1;
   // printf("Generated code:\n");
-  if (error_free) {
+  //if (error_free) {
   	printf("%s\n", node->code.c_str());
-  }
+  //}
 }
 ;
 
@@ -305,11 +322,17 @@ statement: %empty
   node->code = mat->code + std::string("= ") + dest + std::string(", ") + mat->name + std::string("\n");
   $$ = node;
 }
-| ELSE SEMICOLON statements 
+//| ELSE SEMICOLON statements 
+//{
+//}
+| IF bool_exp LEFT_CBRACKET statements RIGHT_CBRACKET ELSE LEFT_CBRACKET statements RIGHT_CBRACKET
 {
-}
-| IF bool_exp SEMICOLON statements 
-{
+  CodeNode* comp = $2;
+  CodeNode* body1 = $4;
+  CodeNode* body2 = $8;
+  CodeNode* node = new CodeNode;
+  node->code = comp->code + std::string("\n");
+  $$ = node;
 }
 | WHILE bool_exp SEMICOLON statements 
 {
@@ -572,6 +595,15 @@ single_tab: TAB
 
 bool_exp: negate expression comp expression 
 {
+  CodeNode* val1 = $2;
+  CodeNode* val2 = $4;
+  std::string temp = create_temp();
+  CodeNode* node = new CodeNode;
+  node->code = decl_temp_code(temp) + std::string("\n") + 
+  comp->code + temp + std::string(", ") + val1->code + std::string(", ")
+   + val2->code + std::string("\n");
+  node->name = temp;
+  $$ = node;
 }
 ;
 
@@ -651,18 +683,33 @@ array_declaration: ARRAY NUMBER
 
 comp: LESS 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string("< ");
+  $$ = node;
 }
 | GREATER 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string("> ");
+  $$ = node;
 }
 | GREATER_OR_EQUAL 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string(">= ");
+  $$ = node;
 }
 | LESSER_OR_EQUAL 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string("<= ");
+  $$ = node;
 }
 | EQUAL 
 {
+  CodeNode* node = new CodeNode;
+  node->code = std::string("== ");
+  $$ = node;
 }
 ;
 
