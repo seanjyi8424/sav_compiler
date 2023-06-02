@@ -18,7 +18,7 @@ int  numberToken;
 int  count_names = 0;
 bool error_free = true;
 
-enum Type { Integer, Array };
+enum Type { Integer, Array, IF, ELSE, END_IF };
 
 struct Symbol {
   std::string name;
@@ -132,20 +132,40 @@ std::string decl_temp_code(std::string &temp) {
   return std::string(". ") + temp;
 }
 
-std::string create_if_temp() {
+std::string create_label(Type t) {
+  static int if_n = 0;
+  static int else_n = 0;
+  static int end = 0;
+  // static int beg_loop = 0;
+  // static int end_loop = 0;
+  std::string value = "";
+
+  if (t == IF) {
+    value = std::string("if_true") + std::to_string(if_n);
+    ++if_n;
+    return value;
+  }
+  else if (t == ELSE) {
+    value = std::string("else") + std::to_string(else_n);
+    ++else_n;
+    return value;
+  }
+  else if (t == END_IF) {
+    value = std::string("else") + std::to_string(end);
+    ++end;
+    return value;
+  }
+  /*else if (t == ELSE) {
+    
+  }
+  else if (t == ELSE) {
+    
+  }*/
 
 }
 
-std::string create_else_temp() {
-
-}
-
-std::string decl_if(std::string &temp) {
-
-}
-
-std::string decl_else(std::string &temp) {
-  
+std::string decl_label(std::string &temp) {
+  return std::string(": ") + temp;
 }
 
     /*Phase 3 end*/
@@ -331,8 +351,17 @@ statement: %empty
   CodeNode* condition = $2;
   CodeNode* body1 = $4;
   CodeNode* body2 = $9;
+  std::string temp_if = create_label(IF);
+  std::string temp_else = create_label(ELSE);
+  std::string temp_endif = create_label(END_IF);
+  std::string if_decl = decl_label(temp_if);
+  std::string else_decl = decl_label(temp_else);
+  std::string end_decl = decl_label(temp_endif);
   CodeNode* node = new CodeNode;
-  node->code = condition->code + std::string("\n");
+  node->code = condition->code + std::string("\n") + temp_if + std::string("\n")
+   + temp_else + std::string("\n") + temp_endif + std::string("\n")
+    + if_decl + std::string("\n") + else_decl + std::string("\n")
+     + end_decl + std::string("\n");
   $$ = node;
 }
 | WHILE bool_exp SEMICOLON statements 
