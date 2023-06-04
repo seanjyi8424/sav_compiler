@@ -395,8 +395,10 @@ statement: %empty
   // create label for loopbody
     body_decl + std::string("\n") +
   // loop body code
-    body->code
-
+    body->code +
+  // jump to the beginning of the loop
+    jump_label(temp_begin) + std::string("\n")
+  // declare end
     ;
  
   $$ = node;
