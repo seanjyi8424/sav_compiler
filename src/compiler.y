@@ -375,6 +375,20 @@ statement: %empty
 }
 | WHILE bool_exp LEFT_PAREN statements RIGHT_PAREN
 {
+  CodeNode* condition = $2;
+  CodeNode* body = $4;
+  std::string temp_begin = create_label(Begin_Loop);
+  std::string temp_body = create_label(Body_Loop);
+  std::string temp_end = create_label(End_Loop);
+  std::string begin_decl = decl_label(temp_begin);
+  std::string body_decl = decl_label(temp_body);
+  std::string end_decl = decl_label(temp_end);
+  CodeNode* node = new CodeNode;
+  node->code = 
+  // check condition and jump
+    condition->code + 
+    std::string("?") + jump_label(temp_body) + std::string(", ") + condition->name + std::string("\n");
+  $$ = node;
 }
 | PRINT var ACCESS_ARRAY NUMBER PERIOD 
 {
