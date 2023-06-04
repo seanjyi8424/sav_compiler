@@ -397,10 +397,9 @@ statement: %empty
   // loop body code
     body->code +
   // jump to the beginning of the loop
-    jump_label(temp_begin) + std::string("\n")
-  // declare end
-    ;
- 
+    jump_label(temp_begin) + std::string("\n") +
+  // declare endloop
+    end_decl + std::string("\n");
   $$ = node;
 }
 | PRINT var ACCESS_ARRAY NUMBER PERIOD 
