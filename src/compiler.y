@@ -373,7 +373,7 @@ statement: %empty
   else_decl + std::string("\n") + body2->code + end_decl + std::string("\n");
   $$ = node;
 }
-| WHILE bool_exp SEMICOLON statements 
+| WHILE bool_exp LEFT_PAREN statements RIGHT_PAREN
 {
 }
 | PRINT var ACCESS_ARRAY NUMBER PERIOD 
