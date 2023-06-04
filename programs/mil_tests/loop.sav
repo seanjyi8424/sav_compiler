@@ -2,7 +2,7 @@ create tool "main" with ok;
 	"i" is a number.
 	
 	"i" is 0.
-	do this until "i" equals 10 (
+	do this until "i" is less than 10 (
 		"i" is "i" plus 1.
 		show me "i".
 	)

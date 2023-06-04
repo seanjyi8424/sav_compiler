@@ -18,7 +18,7 @@ int  numberToken;
 int  count_names = 0;
 bool error_free = true;
 
-enum Type { Integer, Array, If, Else, End_If };
+enum Type { Integer, Array, If, Else, End_If, Begin_Loop, Body_Loop, End_Loop };
 
 struct Symbol {
   std::string name;
@@ -136,32 +136,36 @@ std::string create_label(Type t) {
   static int if_n = 0;
   static int else_n = 0;
   static int end = 0;
-  // static int beg_loop = 0;
-  // static int end_loop = 0;
+  static int beg_loop = 0;
+  static int body_loop = 0;
+  static int end_loop = 0;
   std::string value = "";
 
   if (t == If) {
     value = std::string("if_true") + std::to_string(if_n);
     ++if_n;
-    return value;
   }
   else if (t == Else) {
     value = std::string("else") + std::to_string(else_n);
     ++else_n;
-    return value;
   }
   else if (t == End_If) {
     value = std::string("endif") + std::to_string(end);
     ++end;
-    return value;
   }
-  /*else if (t == ELSE) {
-    
+  else if (t == Begin_Loop) {
+    value = std::string("beginloop") + std::to_string(beg_loop);
+    ++beg_loop;
   }
-  else if (t == ELSE) {
-    
-  }*/
-
+  else if (t == Body_Loop) {
+    value = std::string("loopbody") + std::to_string(body_loop);
+    ++body_loop;
+  }
+  else if (t == End_Loop) {
+    value = std::string("endloop") + std::to_string(end_loop);
+    ++end_loop;
+  }
+  return value;
 }
 
 std::string jump_label(std::string &label) {
@@ -369,8 +373,34 @@ statement: %empty
   else_decl + std::string("\n") + body2->code + end_decl + std::string("\n");
   $$ = node;
 }
-| WHILE bool_exp SEMICOLON statements 
+| WHILE bool_exp LEFT_PAREN statements RIGHT_PAREN
 {
+  CodeNode* condition = $2;
+  CodeNode* body = $4;
+  std::string temp_begin = create_label(Begin_Loop);
+  std::string temp_body = create_label(Body_Loop);
+  std::string temp_end = create_label(End_Loop);
+  std::string begin_decl = decl_label(temp_begin);
+  std::string body_decl = decl_label(temp_body);
+  std::string end_decl = decl_label(temp_end);
+  CodeNode* node = new CodeNode;
+  node->code = 
+  // create begin loop label
+    begin_decl + std::string("\n") +
+  // check condition for true case and jump
+    condition->code + 
+    std::string("?") + jump_label(temp_body) + std::string(", ") + condition->name + std::string("\n") +
+  // unconditional jump to end of the loop
+    jump_label(temp_end) + std::string("\n") +
+  // create label for loopbody
+    body_decl + std::string("\n") +
+  // loop body code
+    body->code +
+  // jump to the beginning of the loop
+    jump_label(temp_begin) + std::string("\n") +
+  // declare endloop
+    end_decl + std::string("\n");
+  $$ = node;
 }
 | PRINT var ACCESS_ARRAY NUMBER PERIOD 
 {

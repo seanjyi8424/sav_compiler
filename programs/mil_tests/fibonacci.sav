@@ -1,0 +1,14 @@
+create tool "fibonacci" with "k" is a number ok;
+    do this if "k" is less than or equal to 1 (
+        give back 1.
+    )
+    otherwise do this (
+        give back use "fibonacci" with "k" minus 1 ok plus use "fibonacci" with "k" minus 2 ok.
+    )
+
+create tool "main" with ok;
+    "n" is a number.
+    "fib_n" is a number.
+    give me "n"
+    "fib_n" is use "fibonacci" with "n" ok.
+    show me "fib_n".
