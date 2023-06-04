@@ -385,9 +385,20 @@ statement: %empty
   std::string end_decl = decl_label(temp_end);
   CodeNode* node = new CodeNode;
   node->code = 
-  // check condition and jump
+  // create begin loop label
+    begin_decl + std::string("\n") +
+  // check condition for true case and jump
     condition->code + 
-    std::string("?") + jump_label(temp_body) + std::string(", ") + condition->name + std::string("\n");
+    std::string("?") + jump_label(temp_body) + std::string(", ") + condition->name + std::string("\n") +
+  // unconditional jump to end of the loop
+    jump_label(temp_end) + std::string("\n") +
+  // create label for loopbody
+    body_decl + std::string("\n") +
+  // loop body code
+    body->code
+
+    ;
+ 
   $$ = node;
 }
 | PRINT var ACCESS_ARRAY NUMBER PERIOD 
