@@ -188,7 +188,7 @@ std::string decl_label(std::string &temp) {
 }
 
 %define parse.error verbose
-%token CONTINUE INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE LEFT_CBRACKET RIGHT_CBRACKET
+%token INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE LEFT_CBRACKET RIGHT_CBRACKET
 %token <op_val> NUMBER 
 %token <op_val> IDENTIFIER
 %token <op_val> ADDITION
@@ -201,6 +201,7 @@ std::string decl_label(std::string &temp) {
 %type  <op_val> term 
 %type  <op_val> function_ident
 %type  <node>   bool_exp
+%token  <node>   CONTINUE
 %type  <node>   comp
 %type  <node>   functions
 %type  <node>   function
@@ -435,11 +436,14 @@ statement: %empty
 }
 | CONTINUE PERIOD 
 {
+  CodeNode * node = new CodeNode;
+  node->code = "";
   if(!in_loop) {
     std::string error = "continue statement not within a loop.";
     yyerror(error.c_str());
     error_free = false;
   }
+  $$ = node;
 }
 | RETURN expression PERIOD
 {

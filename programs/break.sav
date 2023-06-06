@@ -1,8 +1,10 @@
 create tool "main" with ok;
 	"i" is a number.
 	"i" is 0.
-	do this until "i" is less than or equal to 10;
+	do this until "i" is less than or equal to 10 (
 		show me "i".
-		do this if "i" is less than 3;
+		do this if "i" is less than 3 (
 			leave.
+		)
 		"i" is "i" plus 1.
+	)
