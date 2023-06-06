@@ -6,5 +6,6 @@ create tool "main" with ok;
 		do this if "i" is less than 3 (
 			leave.
 		)
+		otherwise do this (	)
 		"i" is "i" plus 1.
 	)
