@@ -133,13 +133,14 @@ std::string decl_temp_code(std::string &temp) {
   return std::string(". ") + temp;
 }
 
+static int if_n = 0;
+static int else_n = 0;
+static int end = 0;
+static int beg_loop = 0;
+static int body_loop = 0;
+static int end_loop = 0;
+
 std::string create_label(Type t) {
-  static int if_n = 0;
-  static int else_n = 0;
-  static int end = 0;
-  static int beg_loop = 0;
-  static int body_loop = 0;
-  static int end_loop = 0;
   std::string value = "";
 
   if (t == If) {
@@ -188,7 +189,7 @@ std::string decl_label(std::string &temp) {
 }
 
 %define parse.error verbose
-%token INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE LEFT_CBRACKET RIGHT_CBRACKET
+%token INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA QUOTE LEFT_CBRACKET RIGHT_CBRACKET
 %token <op_val> NUMBER 
 %token <op_val> IDENTIFIER
 %token <op_val> ADDITION
@@ -202,6 +203,7 @@ std::string decl_label(std::string &temp) {
 %type  <op_val> function_ident
 %type  <node>   bool_exp
 %token  <node>   CONTINUE
+%token  <node>   BREAK
 %type  <node>   comp
 %type  <node>   functions
 %type  <node>   function
@@ -433,6 +435,11 @@ statement: %empty
 }
 | BREAK PERIOD
 {
+  CodeNode * node = new CodeNode;
+  std::string code_label = std::string("endloop") + std::to_string(end_loop) + std::string("\n");
+  node->code = jump_label(code_label);
+  $$ = node;
+
 }
 | CONTINUE PERIOD 
 {
@@ -483,6 +490,8 @@ statement: %empty
   $$ = node;
 }
 ;
+
+ 
 
 array_math: array_expression MULTIPLICATION LEFT_PAREN array_math RIGHT_PAREN
 {
