@@ -130,6 +130,7 @@ at {currPos += yyleng; return ACCESS_ARRAY;}
 , {currPos += yyleng; return COMMA;}
 
 leave {currPos += yyleng; return BREAK;}
+continue {currPos += yyleng; return CONTINUE;}
 do[ ]this[ ]if {currPos += yyleng; return IF;}
 if[ ]not[ ]do[ ]this {currPos += yyleng; return THEN;}
 otherwise[ ]do[ ]this {currPos += yyleng; return ELSE;}

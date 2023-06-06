@@ -17,6 +17,7 @@ char *identToken;
 int  numberToken;
 int  count_names = 0;
 bool error_free = true;
+bool in_loop = false;
 
 enum Type { Integer, Array, If, Else, End_If, Begin_Loop, Body_Loop, End_Loop };
 
@@ -187,7 +188,7 @@ std::string decl_label(std::string &temp) {
 }
 
 %define parse.error verbose
-%token /*NUMBER IDENTIFIER*/ INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE LEFT_CBRACKET RIGHT_CBRACKET
+%token CONTINUE INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA BREAK QUOTE LEFT_CBRACKET RIGHT_CBRACKET
 %token <op_val> NUMBER 
 %token <op_val> IDENTIFIER
 %token <op_val> ADDITION
@@ -229,9 +230,9 @@ prog_start: functions
 {
   CodeNode* node = $1;
   // printf("Generated code:\n");
-  //if (error_free) {
+  if (error_free) {
   	printf("%s\n", node->code.c_str());
-  //}
+  }
 }
 ;
 
@@ -341,6 +342,7 @@ statement: %empty
     Type t = Integer;
     add_variable_to_symbol_table(dest, t);
   }
+  node->arr = false;
   $$ = node;
 }
 | var ASSIGNMENT math PERIOD
@@ -406,11 +408,11 @@ statement: %empty
 {
   std::string temp = create_temp();
   std::string temp_decl = decl_temp_code(temp);
-  std::string arr = $2;
+  std::string arra = $2;
   std::string index = $4;
   CodeNode *node = new CodeNode;
   std::string var = $2;
-  node->code = temp_decl + std::string("\n") + std::string("=[] ") + temp + std::string(", ") + arr + std::string(", ") + index + std::string("\n") + std::string(".> ") + temp + std::string("\n");
+  node->code = temp_decl + std::string("\n") + std::string("=[] ") + temp + std::string(", ") + arra + std::string(", ") + index + std::string("\n") + std::string(".> ") + temp + std::string("\n");
   node->name = temp;
   $$ = node;
 }
@@ -428,8 +430,16 @@ statement: %empty
   node->code = std::string(".> ") + var + std::string("\n");
   $$ = node;
 }
-| BREAK PERIOD 
+| BREAK PERIOD
 {
+}
+| CONTINUE PERIOD 
+{
+  if(!in_loop) {
+    std::string error = "continue statement not within a loop.";
+    yyerror(error.c_str());
+    error_free = false;
+  }
 }
 | RETURN expression PERIOD
 {
@@ -444,9 +454,6 @@ statement: %empty
   CodeNode* node = new CodeNode;
   node->code = mat->code + std::string("ret ") + mat->name + std::string("\n");
   $$ = node; 
-}
-| expression PERIOD 
-{
 }
 | declaration PERIOD 
 {
@@ -524,13 +531,13 @@ array_expression: accessing_array
 
 accessing_array: var ACCESS_ARRAY NUMBER
 {
-  std::string arr = $1;
+  std::string arra = $1;
   std::string index = $3;
   std::string temp = create_temp();
   std::string temp_decl = decl_temp_code(temp);
   CodeNode* node = new CodeNode;
   node->code = temp_decl + std::string("\n") + std::string("=[] ") + temp + 
-  std::string(", ") + arr + std::string(", ") + index + std::string("\n");
+  std::string(", ") + arra + std::string(", ") + index + std::string("\n");
   node->name = temp;
   $$ = node;
 }
@@ -721,7 +728,7 @@ declaration: IDENTIFIER array_declaration INTEGER
     add_variable_to_symbol_table(id, t);
     code_node->arr = true;
   }
-  code_node->arr = true;
+  // code_node->arr = true;
   $$ = code_node;
 }
 | IDENTIFIER INTEGER
@@ -792,7 +799,7 @@ math: multiplicative_expr ADDITION multiplicative_expr
     yyerror(error.c_str());
     error_free = false;
   }
-  else if (term2->arr == true) {
+  if (term2->arr == true && find(term2->name)) {
     error = std::string("used array variable ") + term2->name + (" is missing a specified index.");
     yyerror(error.c_str());
     error_free = false;
@@ -883,6 +890,9 @@ term: var
 }
 | NUMBER 
 {
+  CodeNode* node = new CodeNode;
+  node->code = $1;
+  node->arr = false;
   $$ = $1;
 }
 | LEFT_PAREN expressions END_PARAMS 
