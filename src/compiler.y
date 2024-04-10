@@ -188,7 +188,6 @@ std::string decl_label(std::string &temp) {
   int int_val;
 }
 
-%define parse.error verbose
 %token INTEGER ARRAY ACCESS_ARRAY ASSIGNMENT PERIOD LESS GREATER GREATER_OR_EQUAL LESSER_OR_EQUAL EQUAL DIFFERENT WHILE IF THEN ELSE PRINT READ FUNC_EXEC FUNCTION BEGIN_PARAMS END_PARAMS NOT AND OR TAB SEMICOLON LEFT_PAREN RIGHT_PAREN RETURN COMMA QUOTE LEFT_CBRACKET RIGHT_CBRACKET
 %token <op_val> NUMBER 
 %token <op_val> IDENTIFIER
@@ -239,7 +238,7 @@ prog_start: functions
 }
 ;
 
-functions: %empty 
+functions:  
 {
   CodeNode* node = new CodeNode;
   $$ = node;
@@ -307,7 +306,7 @@ statements: tabs statement
 }
 ;
 
-statement: %empty 
+statement:  
 {
   CodeNode* node = new CodeNode;
   $$ = node;
@@ -693,7 +692,7 @@ bool_exp: negate expression comp expression
 }
 ;
 
-negate: %empty 
+negate:  
 {
 }
 | NOT 
@@ -701,7 +700,7 @@ negate: %empty
 }
 ;
 
-declarations: %empty 
+declarations:  
 {
   CodeNode* node = new CodeNode;
   $$ = node;
@@ -912,7 +911,7 @@ term: var
 {
 }
 
-expressions: %empty 
+expressions:  
 {
 }
 | expression 
