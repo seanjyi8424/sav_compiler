@@ -1,6 +1,7 @@
 # NAME: SAVVY
 Final Project for Compiler Design.
 ## EXTENSION: .sav
+
 ## COMPILER NAME: Savvy Compiler Coalition 
 
 A valid identifier:
@@ -66,4 +67,23 @@ Features:
 | leave | BREAK | 
 | \" | QUOTE |
 
+### Usage
+1. Make sure to have both flex and bison installed
+2. Go to source directory (src/) and execute the Makefile
+3. ./parser < path/to/your_file.sav
 
+### Output Screenshots
+#### array.sav
+<img width="494" alt="array" src="https://github.com/seanjyi8424/sav_compiler-UCR/assets/108261874/7383242f-75a9-45e7-bef9-c2e8521625b8">
+
+#### mil_tests/add.sav
+<img width="546" alt="mil_test_add" src="https://github.com/seanjyi8424/sav_compiler-UCR/assets/108261874/632f437e-d719-4955-a3bb-d2260d88b876">
+
+#### mil_tests/nested_loop.sav
+<img width="601" alt="mil_test_nested_loop" src="https://github.com/seanjyi8424/sav_compiler-UCR/assets/108261874/25147185-3146-414d-b01b-1c9d2aaf52b8">
+
+#### bison_tests/test.txt
+<img width="561" alt="bison_test" src="https://github.com/seanjyi8424/sav_compiler-UCR/assets/108261874/0de417d5-ef22-4539-8f0b-991ad901177a">
+
+#### bison_tests/function_id_error.txt
+<img width="704" alt="function_id_error" src="https://github.com/seanjyi8424/sav_compiler-UCR/assets/108261874/785fc5c0-ca77-4404-a23d-1b8831c4c0e9">
